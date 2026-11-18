@@ -63,6 +63,7 @@ export const updateAboutSettings = async (formData: FormData) => {
     await deleteManagedImageIfUnused(previous.secondImage);
   }
 
+  revalidatePath('/');
   revalidatePath('/about');
   revalidatePath('/admin/about');
   redirect('/admin/about?saved=1');

@@ -68,3 +68,21 @@ body,
 html {
   scroll-behavior: smooth;
 }
+
+@keyframes best-seller-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-best-seller-marquee {
+  animation: best-seller-marquee var(--marquee-duration, 40s) linear infinite;
+  will-change: transform;
+}
+
+.marquee-paused {
+  animation-play-state: paused;
+}

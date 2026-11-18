@@ -17,9 +17,7 @@ const MainLayout = ({ children, contactSettings }: MainLayoutProps) => {
       <div className="min-h-dvh w-full overflow-x-clip">
         <MainNavbar />
         <PagesNavbar />
-        <main className="mt-[100px] min-h-[calc(100vh-390px)] w-full sm:mt-[120px] lg:mt-[220px]">
-          {children}
-        </main>
+        <main className="min-h-[calc(100dvh-260px)] w-full">{children}</main>
         <MainFooter />
         <CustomToast />
       </div>

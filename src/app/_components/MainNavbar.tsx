@@ -1,139 +1,150 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { HamburgerMenuIcon } from '@/components/icons';
+import { CloseIcon, HamburgerMenuIcon } from '@/components/icons';
 import { cn } from '@/utils';
-import { useSiteConfig } from './SiteConfigContext';
+
+export const NAV_ITEMS = [
+  { href: '/', label: 'Home' },
+  { href: '/baskets', label: 'Basket' },
+  { href: '/custom-gift', label: 'Custom Gift' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+] as const;
+
+const LOGO_URL = 'https://images.giftoryth.com/giftoryth-public/images/logos/logo-red-transparent.webp';
 
 const MainNavbar = () => {
   const pathname = usePathname();
-  const { lineLink } = useSiteConfig();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path || pathname === `${path}/`;
 
-  const onOrderByLine = () => {
-    window.open(lineLink, '_blank', 'noopener,noreferrer');
-  };
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
 
-  const closeDrawer = () => {
-    const drawerInput = document.getElementById('my-drawer-3') as HTMLInputElement;
-    if (drawerInput) {
-      drawerInput.checked = false;
-    }
-  };
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMobileMenuOpen]);
 
   return (
-    <div className="drawer">
-      <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content flex flex-col">
-        <div className="navbar fixed left-0 right-0 top-0 z-50 h-[100px] w-full bg-main-white px-4 sm:h-[120px] md:px-6">
-          <div className="navbar-start">
-            <label
-              htmlFor="my-drawer-3"
-              aria-label="open sidebar"
-              className="btn btn-ghost btn-circle lg:hidden"
+    <>
+      <header className="sticky top-0 z-50 w-full border-b border-shadow-black/10 bg-main-white/95 backdrop-blur-md lg:static lg:border-b-0 lg:bg-main-white lg:backdrop-blur-none">
+        <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4 md:px-6 lg:h-[88px]">
+          <div className="flex items-center justify-start">
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open navigation menu"
+              aria-expanded={isMobileMenuOpen}
+              className="btn btn-ghost btn-circle btn-sm md:btn-md lg:hidden"
             >
-              <HamburgerMenuIcon className="!size-6 md:!size-8" />
-            </label>
+              <HamburgerMenuIcon className="!size-6" />
+            </button>
           </div>
-          <div className="navbar-center">
-            <Link href="/">
+
+          <div className="flex h-full items-center justify-center overflow-hidden">
+            <Link href="/" className="flex items-center justify-center" aria-label="giftory home">
               <Image
-                src="https://images.giftoryth.com/giftoryth-public/images/logos/logo-red-transparent.webp"
+                src={LOGO_URL}
                 alt="Giftoryth Logo"
                 width={320}
                 height={200}
-                className="h-32 w-auto sm:h-28 md:h-40 lg:h-48"
+                className="h-28 w-auto sm:h-32 lg:h-40"
                 priority
               />
             </Link>
           </div>
-          <div className="navbar-end gap-x-3">
-            <button
-              onClick={onOrderByLine}
-              className="btn btn-ghost btn-circle"
-              type="button"
-              aria-label="Order via Line"
-            >
-              <Image
-                src="https://images.giftoryth.com/giftoryth-public/images/icons/line-logo.webp"
-                alt="Line Icon"
-                width={40}
-                height={40}
-                className="h-8 w-auto md:h-10"
-              />
-            </button>
-          </div>
+
+          <div className="flex items-center justify-end" />
         </div>
-      </div>
-      <div className="drawer-side pt-[100px] sm:pt-[120px] lg:hidden">
-        <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
-        <ul className="menu min-h-full w-80 bg-main-white p-4 text-lg font-extralight">
-          <li>
+      </header>
+
+      {/* Mobile slide-over navigation drawer */}
+      <div
+        className={cn(
+          'fixed inset-0 z-[60] transition-opacity duration-300 lg:hidden',
+          isMobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+        )}
+        aria-hidden={!isMobileMenuOpen}
+      >
+        <div
+          className="absolute inset-0 bg-shadow-black/35 backdrop-blur-[1px]"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+        <aside
+          className={cn(
+            'relative flex h-full w-72 max-w-[82vw] flex-col bg-main-white shadow-xl transition-transform duration-300 ease-out',
+            isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          )}
+        >
+          <div className="flex h-16 items-center justify-between border-b border-shadow-black/10 px-4">
             <Link
               href="/"
-              onClick={closeDrawer}
-              className={cn(
-                'transition-colors duration-300 hover:text-main-red',
-                isActive('/') && 'text-main-red'
-              )}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex h-full items-center overflow-hidden"
             >
-              Home
+              <Image
+                src={LOGO_URL}
+                alt="Giftoryth Logo"
+                width={200}
+                height={125}
+                className="h-24 w-auto"
+              />
             </Link>
-          </li>
-          <li>
-            <Link
-              href="/baskets"
-              onClick={closeDrawer}
-              className={cn(
-                'transition-colors duration-300 hover:text-main-red',
-                isActive('/baskets') && 'text-main-red'
-              )}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label="Close navigation menu"
+              className="btn btn-ghost btn-circle btn-sm"
             >
-              Basket
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/custom-gift"
-              onClick={closeDrawer}
-              className={cn(
-                'transition-colors duration-300 hover:text-main-red',
-                isActive('/custom-gift') && 'text-main-red'
-              )}
-            >
-              Custom Gift
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/about"
-              onClick={closeDrawer}
-              className={cn(
-                'transition-colors duration-300 hover:text-main-red',
-                isActive('/about') && 'text-main-red'
-              )}
-            >
-              About
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="/contact"
-              onClick={closeDrawer}
-              className={cn(
-                'transition-colors duration-300 hover:text-main-red',
-                isActive('/contact') && 'text-main-red'
-              )}
-            >
-              Contact
-            </Link>
-          </li>
-        </ul>
+              <CloseIcon className="!size-5" />
+            </button>
+          </div>
+
+          <nav aria-label="Mobile navigation" className="flex-1 overflow-y-auto px-4 py-6">
+            <ul className="flex flex-col gap-1">
+              {NAV_ITEMS.map(item => {
+                const active = isActive(item.href);
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={cn(
+                        'block rounded-sm px-3 py-2.5 text-base font-light tracking-wide transition-colors duration-200 hover:bg-shadow-black/5 hover:text-main-red',
+                        active ? 'font-normal text-main-red' : 'text-shadow-black/85'
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </aside>
       </div>
-    </div>
+    </>
   );
 };
 

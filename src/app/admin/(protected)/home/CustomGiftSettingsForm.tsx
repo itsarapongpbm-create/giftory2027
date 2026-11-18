@@ -24,6 +24,7 @@ type ImageInputProps = {
   inputClass: string;
   labelClass: string;
   previewClassName?: string;
+  imageFit?: 'cover' | 'contain';
 };
 
 const ImageInput = ({
@@ -36,6 +37,7 @@ const ImageInput = ({
   inputClass,
   labelClass,
   previewClassName = 'aspect-video',
+  imageFit = 'cover',
 }: ImageInputProps) => {
   const [imageUrl, setImageUrl] = useState(defaultImage);
   const [previewUrl, setPreviewUrl] = useState(defaultImage);
@@ -62,7 +64,11 @@ const ImageInput = ({
           <div
             aria-label={defaultAlt || label}
             role="img"
-            className="size-full bg-cover bg-center"
+            className={
+              imageFit === 'contain'
+                ? 'size-full bg-contain bg-center bg-no-repeat'
+                : 'size-full bg-cover bg-center'
+            }
             style={previewStyle}
           />
         ) : (
@@ -94,7 +100,13 @@ const ImageInput = ({
       <label className="grid gap-2">
         <span className={labelClass}>Upload Image Optional</span>
         <ImageUploadInput
-          cropProfile={fileName === 'leftImageFile' ? 'wide' : 'square'}
+          cropProfile={
+            fileName === 'leftImageFile'
+              ? 'wide'
+              : fileName === 'rightImage2File'
+                ? 'media'
+                : 'square'
+          }
           name={fileName}
           accept="image/webp,image/jpeg,image/png"
           onFileChange={file => {
@@ -142,7 +154,7 @@ const CustomGiftSettingsForm = ({ action, settings, inputClass, labelClass }: Cu
       />
       <ImageInput
         key={'rightImage1:' + settings.rightImage1}
-        label="Right Image 1"
+        label="Right Image 1 (Center)"
         urlName="rightImage1"
         fileName="rightImage1File"
         altName="rightAlt1"
@@ -150,11 +162,12 @@ const CustomGiftSettingsForm = ({ action, settings, inputClass, labelClass }: Cu
         defaultAlt={settings.rightAlt1}
         inputClass={inputClass}
         labelClass={labelClass}
-        previewClassName="aspect-square"
+        previewClassName="aspect-square bg-beige/30 p-3"
+        imageFit="contain"
       />
       <ImageInput
         key={'rightImage2:' + settings.rightImage2}
-        label="Right Image 2"
+        label="Right Image 2 (Tall / Portrait)"
         urlName="rightImage2"
         fileName="rightImage2File"
         altName="rightAlt2"
@@ -162,7 +175,8 @@ const CustomGiftSettingsForm = ({ action, settings, inputClass, labelClass }: Cu
         defaultAlt={settings.rightAlt2}
         inputClass={inputClass}
         labelClass={labelClass}
-        previewClassName="aspect-square"
+        previewClassName="aspect-square bg-white p-3"
+        imageFit="contain"
       />
     </div>
 

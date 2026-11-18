@@ -56,7 +56,7 @@ const BasketsPageClient = ({ sections }: BasketsPageClientProps) => {
 
   return (
     <div className="min-h-[calc(100dvh-290px)]">
-      <div className="flex flex-col gap-4 px-4 md:flex-row md:items-center md:justify-between md:px-8">
+      <div className="flex flex-col gap-4 px-4 pt-6 md:flex-row md:items-center md:justify-between md:px-8">
         <div className="flex flex-wrap justify-center gap-3 md:justify-start">
           {sections.map(section => (
             <OutlineButton
@@ -149,7 +149,7 @@ const BasketsPageClient = ({ sections }: BasketsPageClientProps) => {
                     sectionRefs.current[section.id] = element;
                   }}
                   id={section.slug}
-                  className="mb-2 scroll-mt-[120px] text-lg font-extralight leading-tight tracking-wide sm:scroll-mt-[140px] md:text-xl lg:scroll-mt-[240px] xl:text-2xl"
+                  className="mb-2 scroll-mt-20 text-lg font-extralight leading-tight tracking-wide md:text-xl xl:text-2xl"
                 >
                   {section.name}
                 </h1>

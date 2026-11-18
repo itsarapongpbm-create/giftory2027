@@ -130,6 +130,10 @@ const ContactSettingsForm = ({ action, settings, inputClass, labelClass }: Conta
           <input name="lineLink" defaultValue={settings.lineLink} className={inputClass} />
         </label>
         <label className="grid gap-2">
+          <span className={labelClass}>Instagram URL</span>
+          <input name="instagramLink" defaultValue={settings.instagramLink} className={inputClass} />
+        </label>
+        <label className="grid gap-2">
           <span className={labelClass}>Email</span>
           <input name="email" type="email" defaultValue={settings.email} className={inputClass} />
         </label>
@@ -141,6 +145,10 @@ const ContactSettingsForm = ({ action, settings, inputClass, labelClass }: Conta
       <label className="grid gap-2">
         <span className={labelClass}>Address / Location Text</span>
         <input name="locationText" defaultValue={settings.locationText} className={inputClass} />
+      </label>
+      <label className="grid gap-2">
+        <span className={labelClass}>Google Maps URL (Location Link)</span>
+        <input name="locationLink" defaultValue={settings.locationLink} className={inputClass} />
       </label>
     </section>
 

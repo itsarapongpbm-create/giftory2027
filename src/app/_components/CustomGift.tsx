@@ -9,37 +9,50 @@ const CustomGift = async () => {
   return (
     <>
       <Topic title={customGift.title} />
-      <div className="relative mx-auto grid w-full max-w-[1200px] grid-cols-1 px-4 md:grid-cols-2 md:px-8">
+      <div className="mx-auto w-full max-w-[1600px] px-4 md:px-8">
         <Link
-          className="hover:shadow-card-light card aspect-video w-full rounded-none bg-shadow-black bg-opacity-20"
           href="/custom-gift"
+          aria-label={customGift.title}
+          className="group block overflow-hidden border border-shadow-black/10 bg-white transition-shadow duration-300 hover:shadow-lg"
         >
-          <Image
-            src={customGift.leftImage}
-            alt={customGift.leftAlt}
-            fill
-            sizes="(min-width: 1280px) 40vw, (min-width: 1024px) 50vw, 90vw"
-            className="h-full w-full object-cover"
-          />
-        </Link>
-        <Link
-          className="hover:shadow-card-light flex-2 card relative aspect-video w-full flex-row items-center justify-center rounded-none bg-beige/30"
-          href="/custom-gift"
-        >
-          <Image
-            src={customGift.rightImage1}
-            alt={customGift.rightAlt1}
-            width={400}
-            height={400}
-            className="h-3/5 object-cover"
-          />
-          <Image
-            src={customGift.rightImage2}
-            alt={customGift.rightAlt2}
-            width={400}
-            height={400}
-            className="h-3/4 object-cover"
-          />
+          <div className="grid grid-cols-5 lg:grid-cols-12">
+            {/* Left: Wide Corporate Banner */}
+            <div className="relative col-span-5 aspect-video w-full overflow-hidden bg-beige/20 lg:col-span-7">
+              <Image
+                src={customGift.leftImage}
+                alt={customGift.leftAlt}
+                fill
+                sizes="(min-width: 1600px) 900px, (min-width: 1024px) 58vw, 100vw"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+              />
+            </div>
+
+            {/* Middle: Bows */}
+            <div className="relative col-span-3 min-h-[220px] overflow-hidden border-t border-shadow-black/10 bg-beige/30 sm:min-h-[280px] lg:col-span-3 lg:min-h-0 lg:border-l lg:border-t-0">
+              <div className="absolute inset-5 sm:inset-8">
+                <Image
+                  src={customGift.rightImage1}
+                  alt={customGift.rightAlt1}
+                  fill
+                  sizes="(min-width: 1600px) 380px, (min-width: 1024px) 25vw, 60vw"
+                  className="object-contain transition-transform duration-500 ease-out group-hover:scale-105"
+                />
+              </div>
+            </div>
+
+            {/* Right: Tall Portrait Feature */}
+            <div className="relative col-span-2 min-h-[220px] overflow-hidden border-l border-t border-shadow-black/10 bg-white sm:min-h-[280px] lg:col-span-2 lg:min-h-0 lg:border-t-0">
+              <div className="absolute inset-3 sm:inset-5 lg:inset-4">
+                <Image
+                  src={customGift.rightImage2}
+                  alt={customGift.rightAlt2}
+                  fill
+                  sizes="(min-width: 1600px) 260px, (min-width: 1024px) 17vw, 40vw"
+                  className="object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                />
+              </div>
+            </div>
+          </div>
         </Link>
       </div>
     </>

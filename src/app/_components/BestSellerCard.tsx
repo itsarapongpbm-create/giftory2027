@@ -5,6 +5,7 @@ import { formatPrice } from '@/utils/string';
 
 type BestSellerCardProps = Product.BestSellerCardProps & {
   href?: string;
+  tabIndex?: number;
 };
 
 const BestSellerCard = ({
@@ -15,6 +16,7 @@ const BestSellerCard = ({
   isBestSeller = false,
   isEvenIem = false,
   href = '/baskets',
+  tabIndex,
 }: BestSellerCardProps) => {
   const badgeVariant = isEvenIem ? 'even' : 'odd';
   const priceFormat = price ? formatPrice(price) : undefined;
@@ -22,6 +24,7 @@ const BestSellerCard = ({
   return (
     <Link
       href={href}
+      tabIndex={tabIndex}
       className="hover:shadow-card group card relative aspect-[3/4] h-[300px] w-full cursor-pointer overflow-hidden rounded-none bg-shadow-black bg-opacity-20 shadow-sm sm:h-[330px] md:h-[360px] lg:h-[390px]"
     >
       <Image

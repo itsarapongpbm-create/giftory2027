@@ -1,4 +1,5 @@
 import ProductCategoryCard from './ProductCategoryCard';
+import Topic from './Topic';
 import { getHomeCatalogItems } from '@/lib/homeCatalog';
 
 const ProductCategory = async () => {
@@ -6,9 +7,9 @@ const ProductCategory = async () => {
 
   return (
     <>
-      <div className="mx-auto my-10 h-[2px] w-24 bg-shadow-black" />
+      <Topic title="Product Category" />
 
-      <div className="mt-10 grid w-full grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:gap-6 md:px-8 lg:grid-cols-3 lg:gap-8 lg:px-16 xl:px-32 2xl:gap-24">
+      <div className="grid w-full grid-cols-1 gap-4 px-4 sm:grid-cols-2 md:gap-6 md:px-8 lg:grid-cols-3 lg:gap-8 lg:px-16 xl:px-32 2xl:gap-24">
         {productCategories.map((category, index) => (
           <ProductCategoryCard
             key={`${category.title}-${index}`}
