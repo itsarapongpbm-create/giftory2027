@@ -1,0 +1,89 @@
+{
+  "name": "giftoryth-admin",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "dev:next": "next dev -p 8080",
+    "build": "next build",
+    "build:next": "next build",
+    "start": "next start -p 8080",
+    "start:next": "next start -p 8080",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:next": "next lint",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:seed": "prisma db seed",
+    "legacy:crawl": "node scripts/legacy-crawl.mjs",
+    "products:migrate-images": "node scripts/migrate-product-images.mjs",
+    "db:local": "docker compose -f docker-compose.local.yml up -d",
+    "docker:dev-vps:config": "docker compose --env-file .env.dev-vps -f docker-compose.dev-vps.yml config",
+    "docker:dev-vps:up": "docker compose --env-file .env.dev-vps -f docker-compose.dev-vps.yml up -d --build",
+    "docker:dev-vps:down": "docker compose --env-file .env.dev-vps -f docker-compose.dev-vps.yml down",
+    "docker:dev-vps:logs": "docker compose --env-file .env.dev-vps -f docker-compose.dev-vps.yml logs -f",
+    "docker:dev-vps:migrate": "docker exec basket-shop-app-dev npx prisma migrate deploy",
+    "docker:dev-vps:seed": "docker exec basket-shop-app-dev npm run prisma:seed",
+    "prepare": "husky",
+    "commit": "cz"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1075.0",
+    "@emailjs/browser": "^4.4.1",
+    "@prisma/client": "^6.18.0",
+    "clsx": "^2.1.1",
+    "next": "^16.0.7",
+    "prettier-plugin-tailwindcss": "^0.6.14",
+    "prisma": "^6.18.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-hot-toast": "^2.6.0",
+    "sharp": "^0.35.2",
+    "tailwind-merge": "^3.3.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.0",
+    "@commitlint/cz-commitlint": "^19.2.0",
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "autoprefixer": "^10.4.21",
+    "commitizen": "^4.3.1",
+    "daisyui": "^5.1.24",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^16.0.7",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.2",
+    "postcss": "^8.5.6",
+    "prettier": "^3.6.2",
+    "tailwindcss": "^3.4.14",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.44.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint . --fix",
+      "prettier --write ."
+    ],
+    "*.{json,yaml,yml,md}": [
+      "prettier --write ."
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "@commitlint/cz-commitlint"
+    }
+  },
+  "prisma": {
+    "seed": "node prisma/seed.mjs"
+  }
+}

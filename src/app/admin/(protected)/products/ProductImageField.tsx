@@ -1,0 +1,85 @@
+'use client';
+
+import ImageUploadInput from '@/app/admin/(protected)/_components/ImageUploadInput';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+type ProductImageFieldProps = {
+  defaultImage?: string | null;
+  inputClass: string;
+  labelClass: string;
+};
+
+const ProductImageField = ({ defaultImage, inputClass, labelClass }: ProductImageFieldProps) => {
+  const [imageUrl, setImageUrl] = useState(defaultImage || '');
+  const [previewUrl, setPreviewUrl] = useState(defaultImage || '');
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  return (
+    <div className="grid gap-4 md:grid-cols-[220px_1fr]">
+      <div className="grid gap-2">
+        <span className={labelClass}>Image Preview</span>
+        <div className="relative aspect-[2/3] w-full overflow-hidden border border-shadow-black/10 bg-main-white">
+          {previewUrl ? (
+            <Image src={previewUrl} alt="Product preview" fill sizes="220px" className="object-cover" />
+          ) : (
+            <div className="flex size-full items-center justify-center px-4 text-center text-sm font-light text-shadow-black/40">
+              No image
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="grid gap-5">
+        <label className="grid gap-2">
+          <span className={labelClass}>Image URL</span>
+          <input
+            name="image"
+            value={imageUrl}
+            onChange={event => {
+              setImageUrl(event.target.value);
+              setPreviewUrl(event.target.value);
+            }}
+            className={inputClass}
+          />
+        </label>
+
+        <label className="grid gap-2">
+          <span className={labelClass}>Upload Image Optional</span>
+          <ImageUploadInput
+          cropProfile="product"
+            name="imageFile"
+            accept="image/webp,image/jpeg,image/png"
+            onFileChange={file => {
+              if (!file) {
+                setPreviewUrl(imageUrl);
+                return;
+              }
+
+              const objectUrl = URL.createObjectURL(file);
+              setPreviewUrl(objectUrl);
+            }}
+            className="w-full border border-dashed border-shadow-black/20 px-3 py-3 text-sm file:mr-4 file:border-0 file:bg-maroon file:px-4 file:py-2 file:text-main-white"
+          />
+          <span className="text-xs font-light text-shadow-black/50">
+            WEBP, JPG, or PNG. Crop and resize before upload. Saved as WEBP with 1200px detail, 700px card, and 240px thumbnail images.
+          </span>
+          <Link href="/admin/media" target="_blank" className="text-xs font-light text-maroon underline-offset-4 hover:underline">
+            Open media library
+          </Link>
+        </label>
+      </div>
+    </div>
+  );
+};
+
+export default ProductImageField;

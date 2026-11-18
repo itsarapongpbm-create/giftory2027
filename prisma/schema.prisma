@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  name      String
+  sortOrder Int       @default(0)
+  products  Product[]
+}
+
+model Product {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  title          String
+  price          Int?
+  image          String
+  cardImage      String?
+  thumbnailImage String?
+  details        String
+  categoryId     String
+  category       Category       @relation(fields: [categoryId], references: [id])
+  galleryImages  ProductImage[]
+  isPublished    Boolean        @default(true)
+  isBestSeller   Boolean        @default(false)
+  sortOrder      Int            @default(0)
+  imageClassName String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HomeIdentityItem {
+  id             String   @id @default(cuid())
+  slot           Int      @unique
+  title          String
+  image          String
+  imageClassName String?
+  isPublished    Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model CustomGiftItem {
+  id             String   @id @default(cuid())
+  slot           Int      @unique
+  title          String
+  image          String
+  imageClassName String?
+  isPublished    Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model HomeCatalogItem {
+  id          String   @id @default(cuid())
+  slot        Int      @unique
+  title       String
+  image       String
+  url         String
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
