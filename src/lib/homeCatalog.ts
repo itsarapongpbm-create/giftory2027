@@ -80,12 +80,18 @@ export const getHomeCatalogItems = async (options: { includeHidden?: boolean } =
 };
 
 export const getNextHomeCatalogSlot = async () => {
-  const lastItem = await prisma.homeCatalogItem.findFirst({
-    orderBy: { slot: 'desc' },
-    select: { slot: true },
-  });
+  let lastSlot = 0;
+  try {
+    const lastItem = await prisma.homeCatalogItem.findFirst({
+      orderBy: { slot: 'desc' },
+      select: { slot: true },
+    });
+    lastSlot = lastItem?.slot || 0;
+  } catch (error) {
+    console.warn('getNextHomeCatalogSlot fallback (DB unavailable):', (error as Error).message);
+  }
   const lastDefaultSlot = Math.max(...defaultHomeCatalogItems.map(item => item.slot));
 
-  return Math.max(lastItem?.slot || 0, lastDefaultSlot) + 1;
+  return Math.max(lastSlot, lastDefaultSlot) + 1;
 };
 

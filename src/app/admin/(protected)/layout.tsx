@@ -2,6 +2,8 @@ import { logoutAdmin } from '../actions';
 import { requireAdmin } from '@/lib/adminAuth';
 import AdminNav from './_components/AdminNav';
 
+export const dynamic = 'force-dynamic';
+
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   await requireAdmin();
 

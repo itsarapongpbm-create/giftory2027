@@ -33,3 +33,4 @@ jobs:
         env:
           NEXT_PUBLIC_SITE_URL: https://www.giftoryth.com
           PRIMARY_DOMAIN: www.giftoryth.com
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/giftoryth_ci

@@ -48,11 +48,17 @@ export const getCustomGiftPageItems = async (options: { includeHidden?: boolean 
 };
 
 export const getNextCustomGiftSlot = async () => {
-  const lastItem = await prisma.customGiftItem.findFirst({
-    orderBy: { slot: 'desc' },
-    select: { slot: true },
-  });
+  let lastSlot = 0;
+  try {
+    const lastItem = await prisma.customGiftItem.findFirst({
+      orderBy: { slot: 'desc' },
+      select: { slot: true },
+    });
+    lastSlot = lastItem?.slot || 0;
+  } catch (error) {
+    console.warn('getNextCustomGiftSlot fallback (DB unavailable):', (error as Error).message);
+  }
   const lastDefaultSlot = Math.max(...customGift.map(item => item.slot));
 
-  return Math.max(lastItem?.slot || 0, lastDefaultSlot) + 1;
+  return Math.max(lastSlot, lastDefaultSlot) + 1;
 };
