@@ -5,7 +5,7 @@ declare namespace Contact {
     title: string;
     detail: string;
     className: ClassValue;
-    type?: 'email' | 'phone' | 'location' | 'line' | 'other';
+    type?: 'email' | 'phone' | 'location' | 'line' | 'instagram' | 'other';
     value?: string;
     onClick?: () => void;
   };

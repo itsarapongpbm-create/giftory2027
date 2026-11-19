@@ -22,9 +22,11 @@ const ContactCard = ({
       case 'phone':
         return `Call to '${value || detail}'`;
       case 'line':
-        return `Message to '${value || detail}'`;
+        return 'Message on LINE';
+      case 'instagram':
+        return 'Follow on Instagram';
       case 'location':
-        return `Open in Maps`;
+        return 'Open in Google Maps';
       default:
         return detail;
     }
@@ -35,14 +37,31 @@ const ContactCard = ({
       case 'email':
         window.open(`mailto:${value || detail}`, '_blank');
         break;
-      case 'phone':
-        window.open(`tel:${value || detail.replace(/[^0-9+]/g, '')}`, '_blank');
+      case 'phone': {
+        const cleanedPhone = (value || detail).replace(/[^0-9+]/g, '');
+        window.open(`tel:${cleanedPhone}`, '_blank');
         break;
+      }
       case 'line':
-        // For LINE, you can open LINE app or web version
-        window.open(`https://line.me/R/ti/p/${encodeURIComponent(value || detail)}`, '_blank');
+        if (value?.startsWith('http')) {
+          window.open(value, '_blank');
+        } else {
+          window.open(`https://line.me/R/ti/p/${encodeURIComponent(value || detail)}`, '_blank');
+        }
+        break;
+      case 'instagram':
+        if (value?.startsWith('http')) {
+          window.open(value, '_blank');
+        } else {
+          const handle = (value || detail).replace(/^@/, '');
+          window.open(`https://www.instagram.com/${handle}`, '_blank');
+        }
         break;
       case 'location': {
+        if (value?.startsWith('http')) {
+          window.open(value, '_blank');
+          break;
+        }
         // Open in Google Maps with the address
         const address = encodeURIComponent(value || detail);
         // Try to detect if it's iOS to use Apple Maps, otherwise use Google Maps
@@ -79,7 +98,7 @@ const ContactCard = ({
 
       <div className="flex-1">
         <h3 className="mb-1 text-base font-extralight text-main md:text-lg xl:text-xl">{title}</h3>
-        <div className="text-sm font-extralight text-gray-600 md:text-base xl:text-lg">
+        <div className="whitespace-pre-line text-sm font-extralight text-gray-600 md:text-base xl:text-lg">
           {detail}
         </div>
       </div>

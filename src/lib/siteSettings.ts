@@ -177,8 +177,9 @@ export const DEFAULT_CONTACT_SETTINGS = {
   lineLink: 'https://line.me/R/ti/p/@giftory.th',
   instagramLink: 'https://www.instagram.com/giftory.th?cnvx=Y295bnJveWwwd3ln',
   email: 'sales@giftoryth.com',
-  locationText: '46/14 Rim Khlong Bang Kho Road, Bang Kho, Chom Thong, Bangkok 10150',
-  locationQuery: 'ถนน ริมคลองบางค้อ',
+  locationText:
+    'MAM Design and Service Co., Ltd.\n46/14 Rim Khlong Bang Kho Rd., Bang Kho, Chom Thong, Bangkok 10150',
+  locationQuery: 'MAM Design and Service Co., Ltd.',
   locationLink:
     'https://www.google.com/maps/place/%E0%B8%9A%E0%B8%A3%E0%B8%B4%E0%B8%A9%E0%B8%B1%E0%B8%97+%E0%B9%80%E0%B8%AD%E0%B9%87%E0%B8%A1%E0%B9%80%E0%B8%AD%E0%B9%80%E0%B8%AD%E0%B9%87%E0%B8%A1+%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B9%81%E0%B8%AD%E0%B8%99%E0%B8%94%E0%B9%8C%E0%B9%80%E0%B8%8B%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%A7%E0%B8%B4%E0%B8%AA+%E0%B8%88%E0%B8%B3%E0%B8%81%E0%B8%B1%E0%B8%94/@13.698763,100.467262,18.5z/data=!4m15!1m8!3m7!1s0x30e2987b72aae9d7:0x14e2f2b4be951fe9!2z4LiW4LiZ4LiZIOC4o-C4tOC4oeC4hOC4peC4reC4h-C4muC4suC4h-C4hOC5ieC4rSDguYHguILguKfguIfguJrguLLguIfguITguYnguK0g4LmA4LiC4LiV4LiI4Lit4Lih4LiX4Lit4LiHIOC4geC4o-C4uOC4h-C5gOC4l-C4nuC4oeC4q-C4suC4meC4hOC4oyAxMDE1MA!3b1!8m2!3d13.6999352!4d100.4777495!16s%2Fg%2F11cs31w7_g!3m5!1s0x30e2990012ebfd59:0xe63c6b8f066e6e49!8m2!3d13.6981869!4d100.4687875!16s%2Fg%2F11ykxrcyd9?entry=ttu&g_ep=EgoyMDI2MTExNS4wIKXMDSoASAFQAw%3D%3D',
   hoursWeekday: '9:00 AM - 6:00 PM',
@@ -363,4 +364,75 @@ export const getContactSettings = async (): Promise<ContactSettings> => {
     hoursSunday: settings.get(CONTACT_SETTING_KEYS.hoursSunday) || DEFAULT_CONTACT_SETTINGS.hoursSunday,
     catalogPdfUrl: settings.get(CONTACT_SETTING_KEYS.catalogPdfUrl) || DEFAULT_CONTACT_SETTINGS.catalogPdfUrl,
   };
+};
+
+export type CategoryShowcase = {
+  slug: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  coverImage: string;
+  coverAlt: string;
+};
+
+export const DEFAULT_CATEGORY_SHOWCASES: Record<string, CategoryShowcase> = {
+  'non-custom': {
+    slug: 'non-custom',
+    title: 'Non Custom Baskets',
+    subtitle: 'กระเช้าของขวัญสำเร็จรูป คัดสรรอย่างประณีต',
+    description:
+      'ชุดกระเช้าของขวัญสำเร็จรูป คัดสรรขนม ชา กาแฟ และสินค้าพรีเมียมคุณภาพดี จัดวางอย่างประณีตพร้อมส่งมอบความสุขในทุกโอกาสพิเศษ เหมาะสำหรับมอบให้ผู้ใหญ่ ลูกค้าคนสำคัญ และบุคคลที่คุณเคารพนับถือ',
+    coverImage: '/images/Basket/04.webp',
+    coverAlt: 'Non Custom Baskets highlight',
+  },
+  'special-custom-design': {
+    slug: 'special-custom-design',
+    title: 'Special Custom Design Baskets',
+    subtitle: 'กระเช้าของขวัญสั่งทำพิเศษ ดีไซน์เฉพาะคุณ',
+    description:
+      'บริการออกแบบและจัดกระเช้าของขวัญแบบสั่งทำพิเศษ (Custom Made) ตอบโจทย์เอกลักษณ์เฉพาะองค์กรและบุคคล ปรับแต่งโทนสี โบว์ การ์ดอวยพร และสินค้าภายในได้อย่างอิสระ เพื่อสร้างความประทับใจที่แตกต่างและทรงคุณค่า',
+    coverImage: '/images/special-custom-design/custom-basket/03.webp',
+    coverAlt: 'Special Custom Design Baskets highlight',
+  },
+};
+
+export const getCategoryShowcaseKeys = (slug: string) => ({
+  title: `category.${slug}.title`,
+  subtitle: `category.${slug}.subtitle`,
+  description: `category.${slug}.description`,
+  coverImage: `category.${slug}.coverImage`,
+  coverAlt: `category.${slug}.coverAlt`,
+});
+
+export const getCategoryShowcase = async (slug: string): Promise<CategoryShowcase> => {
+  const defaults = DEFAULT_CATEGORY_SHOWCASES[slug] || {
+    slug,
+    title: slug,
+    subtitle: '',
+    description: '',
+    coverImage: '/images/cover.webp',
+    coverAlt: slug,
+  };
+
+  const keys = getCategoryShowcaseKeys(slug);
+  const settings = await getSiteSettings(Object.values(keys));
+
+  return {
+    slug,
+    title: settings.get(keys.title) || defaults.title,
+    subtitle: settings.get(keys.subtitle) || defaults.subtitle,
+    description: settings.get(keys.description) || defaults.description,
+    coverImage: settings.get(keys.coverImage) || defaults.coverImage,
+    coverAlt: settings.get(keys.coverAlt) || defaults.coverAlt,
+  };
+};
+
+export const getAllCategoryShowcases = async (slugs: string[]): Promise<Record<string, CategoryShowcase>> => {
+  const result: Record<string, CategoryShowcase> = {};
+  await Promise.all(
+    slugs.map(async slug => {
+      result[slug] = await getCategoryShowcase(slug);
+    })
+  );
+  return result;
 };

@@ -62,6 +62,9 @@ const BasketPage = async ({ params }: { params: PageParams }) => {
     generateBreadcrumbStructuredData([
       { name: 'Home', url: `${baseUrl}/` },
       { name: 'Baskets', url: `${baseUrl}/baskets` },
+      ...(product.categorySlug
+        ? [{ name: product.categoryName || product.categorySlug, url: `${baseUrl}/baskets/${product.categorySlug}` }]
+        : []),
       { name: product.title, url: `${baseUrl}/basket/${id}` },
     ]),
   ];

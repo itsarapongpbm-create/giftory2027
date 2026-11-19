@@ -106,3 +106,42 @@ export const deleteCategory = async (formData: FormData) => {
   revalidateCategoryPaths();
   redirect('/admin/categories?saved=1');
 };
+
+export const updateCategoryShowcaseAction = async (formData: FormData) => {
+  await requireAdmin();
+
+  const slug = toSlug(formData.get('slug'));
+  const title = String(formData.get('title') || '').trim();
+  const subtitle = String(formData.get('subtitle') || '').trim();
+  const description = String(formData.get('description') || '').trim();
+  const coverImage = String(formData.get('coverImage') || '').trim();
+  const coverAlt = String(formData.get('coverAlt') || '').trim();
+
+  if (!slug || !title) {
+    redirect('/admin/categories?error=missing-fields');
+  }
+
+  const { getCategoryShowcaseKeys } = await import('@/lib/siteSettings');
+  const keys = getCategoryShowcaseKeys(slug);
+  const entries: [string, string][] = [
+    [keys.title, title],
+    [keys.subtitle, subtitle],
+    [keys.description, description],
+    [keys.coverImage, coverImage],
+    [keys.coverAlt, coverAlt],
+  ];
+
+  await prisma.$transaction(
+    entries.map(([key, value]) =>
+      prisma.siteSetting.upsert({
+        where: { key },
+        update: { value },
+        create: { key, value },
+      })
+    )
+  );
+
+  revalidateCategoryPaths();
+  revalidatePath(`/baskets/${slug}`);
+  redirect('/admin/categories?saved=1');
+};

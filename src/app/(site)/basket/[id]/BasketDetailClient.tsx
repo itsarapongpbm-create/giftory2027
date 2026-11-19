@@ -72,7 +72,7 @@ const BasketDetailClient = ({ product, relatedProducts = [] }: BasketDetailClien
             <>
               <span>/</span>
               <Link
-                href={`/baskets#${product.categorySlug}`}
+                href={`/baskets/${product.categorySlug}`}
                 className="hover:text-main-white hover:underline"
               >
                 {product.categoryName}

@@ -1,6 +1,7 @@
 import AboutSection from './AboutSection';
 import BestSeller from './BestSeller';
 import CustomGift from './CustomGift';
+import HomeContactSection from './HomeContactSection';
 import InstagramFeedSection from './InstagramFeedSection';
 import NewArrivals from './NewArrivals';
 import PageCover from './PageCover';
@@ -23,6 +24,7 @@ const HomeContent = async () => {
       <SpecialIdentityService />
       <AboutSection />
       <InstagramFeedSection />
+      <HomeContactSection />
     </div>
   );
 };

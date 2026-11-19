@@ -75,7 +75,31 @@ const ContactPage = async () => {
       detail: contactSettings.lineId,
       className: 'bg-main-red',
       type: 'line' as const,
-      value: contactSettings.lineId,
+      value: contactSettings.lineLink || contactSettings.lineId,
+    },
+    {
+      id: 'instagram',
+      icon: (
+        <svg
+          className="size-6 text-white"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+          <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+        </svg>
+      ),
+      title: 'Instagram',
+      detail: '@giftory.th',
+      className: 'bg-main-red',
+      type: 'instagram' as const,
+      value: contactSettings.instagramLink,
     },
     {
       id: 'email',
@@ -106,89 +130,74 @@ const ContactPage = async () => {
       detail: contactSettings.locationText,
       className: 'bg-main-red',
       type: 'location' as const,
-      value: contactSettings.locationQuery || contactSettings.locationText,
+      value:
+        contactSettings.locationLink ||
+        contactSettings.locationQuery ||
+        contactSettings.locationText,
     },
   ].filter(item => Boolean(item.detail));
 
-  return (
-    <div className="mb-4 flex grid-cols-2 flex-col overflow-y-hidden max-md:min-h-[calc(100dvh-290px)] lg:grid lg:h-[calc(100dvh-290px)]">
-      <div className="col-span-1 flex items-center justify-center bg-beige max-lg:max-h-[400px]">
-        <Image
-          src={contactSettings.logoImage}
-          alt={contactSettings.logoAlt}
-          width={1000}
-          height={1000}
-          className="h-full w-full object-cover object-center"
-        />
-      </div>
+  const showcaseImage = contactSettings.featureImage || contactSettings.logoImage;
 
-      <div className="scrollbar-hide col-span-1 flex flex-col gap-y-4 overflow-y-auto bg-white lg:gap-y-8">
-        <div className="flex h-fit w-full flex-col items-center justify-center px-4 pt-[40px] md:px-10 lg:mb-10 lg:pt-[80px]">
-          <div className="mb-6 h-[1px] w-32 bg-main-red"></div>
-          <p className="text-center text-base font-extralight leading-relaxed text-maroon md:text-lg xl:text-xl">
-            {contactSettings.tagline}
+  return (
+    <div className="mb-4 flex flex-col overflow-hidden max-md:min-h-[calc(100dvh-290px)] lg:grid lg:grid-cols-2">
+      {/* Left Column: Premium Lifestyle Showcase with Brand Caption */}
+      <div className="relative min-h-[460px] bg-beige sm:min-h-[520px] lg:min-h-full">
+        <Image
+          src={showcaseImage}
+          alt={contactSettings.featureAlt || 'giftory handmade baskets'}
+          fill
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          className="object-cover object-center"
+          priority
+        />
+        {/* Subtle Gradient & Brand Caption Overlay */}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-shadow-black/85 via-shadow-black/45 to-transparent p-6 text-main-white sm:p-8">
+          <p className="text-lg font-light tracking-wide sm:text-xl md:text-2xl">
+            {contactSettings.companyName}
+          </p>
+          <p className="mt-1 max-w-md text-xs font-extralight text-main-white/85 sm:text-sm">
+            {contactSettings.companySubtitle}
           </p>
         </div>
+      </div>
 
-        <div className="px-4 md:px-8">
-          {dynamicContactInfo.map(contact => (
-            <ContactCard key={contact.id} {...contact} />
-          ))}
-        </div>
-
-        <div className="relative h-[400px] w-full !bg-beige text-center">
-          <Image
-            src={contactSettings.featureImage}
-            alt={contactSettings.featureAlt}
-            width={1000}
-            height={1000}
-            className="h-full w-full object-cover object-center"
-          />
-          <div className="absolute bottom-0 left-0 right-0 h-full w-full bg-black/30" />
-          <div className="absolute left-1/2 top-1/2 flex w-full -translate-x-1/2 -translate-y-1/2 flex-col gap-y-6 text-main-white">
-            <p className="text-lg font-light tracking-wide md:text-2xl xl:text-3xl">
-              {contactSettings.companyName}
-            </p>
-            <p className="px-2 text-center text-sm font-extralight md:text-base xl:text-xl">
-              {contactSettings.companySubtitle}
-            </p>
+      {/* Right Column: Clean Contact Details & Business Hours */}
+      <div className="flex flex-col justify-between bg-white p-6 sm:p-8 lg:p-10">
+        <div>
+          {/* Contact Cards List */}
+          <div className="divide-y divide-gray-100">
+            {dynamicContactInfo.map(contact => (
+              <ContactCard key={contact.id} {...contact} />
+            ))}
           </div>
         </div>
 
-        <div className="shadow-card-light mx-4 mt-4 flex flex-col items-center justify-center gap-y-4 border border-gray-100 bg-white p-4 md:mx-8 md:p-8">
-          <Image
-            src={contactSettings.qrImage}
-            alt={contactSettings.qrAlt}
-            width={192}
-            height={192}
-            className="size-48 object-cover"
-          />
-          <p className="text-center text-sm font-extralight text-main md:text-base xl:text-lg">
-            Join our Line to get the latest updates
-          </p>
-          <div className="h-[1px] w-32 bg-main-red" />
-        </div>
-
-        <div className="mb-16 text-center">
-          <h3 className="mb-6 text-lg font-light text-main md:text-xl xl:text-2xl">
+        {/* Business Hours */}
+        <div className="mt-8 border-t border-gray-100 pt-6 text-center">
+          <h2 className="mb-3 text-xs font-light uppercase tracking-widest text-shadow-black/60 sm:text-sm">
             Business Hours
-          </h3>
-          <div className="mx-auto grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="py-3">
-              <p className="mb-1 text-sm font-extralight text-main md:text-base">Monday - Friday</p>
-              <p className="text-sm text-gray-600 md:text-base xl:text-lg">
+          </h2>
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+            <div className="rounded-lg border border-shadow-black/5 bg-[#FAF9F6] p-3 text-center">
+              <p className="mb-1 text-xs font-light text-shadow-black/65">
+                Monday - Friday
+              </p>
+              <p className="text-xs font-medium text-shadow-black sm:text-sm">
                 {contactSettings.hoursWeekday}
               </p>
             </div>
-            <div className="py-3">
-              <p className="mb-1 text-sm font-extralight text-main md:text-base">Saturday</p>
-              <p className="text-sm text-gray-600 md:text-base xl:text-lg">
+            <div className="rounded-lg border border-shadow-black/5 bg-[#FAF9F6] p-3 text-center">
+              <p className="mb-1 text-xs font-light text-shadow-black/65">
+                Saturday
+              </p>
+              <p className="text-xs font-medium text-shadow-black sm:text-sm">
                 {contactSettings.hoursSaturday}
               </p>
             </div>
-            <div className="py-3">
-              <p className="mb-1 text-sm font-extralight text-main md:text-base">Sunday</p>
-              <p className="text-sm text-gray-600 md:text-base xl:text-lg">
+            <div className="rounded-lg border border-shadow-black/5 bg-[#FAF9F6] p-3 text-center">
+              <p className="mb-1 text-xs font-light text-shadow-black/65">Sunday</p>
+              <p className="text-xs font-medium text-shadow-black sm:text-sm">
                 {contactSettings.hoursSunday}
               </p>
             </div>
