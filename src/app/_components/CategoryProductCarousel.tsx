@@ -14,7 +14,7 @@ type CategoryProductCarouselProps = {
 
 export default function CategoryProductCarousel({
   products,
-  categorySlug: _categorySlug,
+  categorySlug,
 }: CategoryProductCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [canScroll, setCanScroll] = useState(false);
@@ -140,6 +140,7 @@ export default function CategoryProductCarousel({
       >
         {products.map(product => {
           const priceDisplay = product.price ? `${formatPrice(product.price)} ฿` : 'Contact us';
+          const isCustom = categorySlug === 'special-custom-design' || product.id.startsWith('custom-');
 
           return (
             <Link
@@ -149,6 +150,16 @@ export default function CategoryProductCarousel({
             >
               {/* Product Image Container */}
               <div className="relative aspect-square w-full overflow-hidden rounded-lg border border-shadow-black/10 bg-white p-2 transition-all duration-200 group-hover:border-maroon/40 group-hover:shadow-md">
+                {isCustom && (
+                  <Image
+                    src="/images/background-product-clean.webp"
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 230px, (min-width: 640px) 200px, 180px"
+                    className="absolute inset-0 size-full scale-[1.04] object-cover object-top"
+                    priority={false}
+                  />
+                )}
                 <div className="relative size-full">
                   <Image
                     src={product.cardImage || product.image}
@@ -157,7 +168,7 @@ export default function CategoryProductCarousel({
                     sizes="(min-width: 1024px) 230px, (min-width: 640px) 200px, 180px"
                     className={cn(
                       'object-contain transition-transform duration-300 group-hover:scale-105',
-                      product.imageClassName
+                      isCustom ? 'h-[90%] w-full absolute bottom-0' : product.imageClassName
                     )}
                   />
                 </div>

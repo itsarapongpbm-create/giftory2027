@@ -168,7 +168,7 @@ export const DEFAULT_CONTACT_SETTINGS = {
   qrImage: 'https://images.giftoryth.com/giftoryth-public/images/line/qr.webp',
   qrAlt: 'Giftoryth Line QR code',
   tagline:
-    'Give practical gifts that last through every precious moment. Picnic baskets designed for special people... in seasons filled with smiles 🧺✨ #BasketShopMoments',
+    'Give practical gifts that last through every precious moment. Picnic baskets designed for special people... in seasons filled with smiles #BasketShopMoments',
   companyName: 'MAM Design and Service Co., Ltd.',
   companySubtitle: 'Crafting beautiful handmade baskets and custom gifts with passion and precision.',
   phone: '0-2060-2828',

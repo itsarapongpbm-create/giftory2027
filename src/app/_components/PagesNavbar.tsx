@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/utils';
+import CartNavButton from '@/components/navigation/CartNavButton';
+import UserNavMenu from '@/components/navigation/UserNavMenu';
 import { NAV_ITEMS } from './MainNavbar';
 
 const LOGO_URL = 'https://images.giftoryth.com/giftoryth-public/images/logos/logo-red-transparent.webp';
@@ -37,7 +39,7 @@ const PagesNavbar = () => {
       <nav
         aria-label="Main navigation"
         className={cn(
-          'sticky top-0 z-50 hidden w-full border-b transition-all duration-300 lg:block',
+          'sticky top-0 z-40 hidden w-full border-b transition-all duration-300 lg:block',
           isStuck
             ? 'border-shadow-black/10 bg-main-white/95 shadow-[0_4px_20px_-4px_rgba(16,12,8,0.08)] backdrop-blur-md'
             : 'border-shadow-black/10 bg-main-white'
@@ -85,7 +87,15 @@ const PagesNavbar = () => {
             })}
           </ul>
 
-          <div className="flex items-center justify-end" />
+          <div
+            className={cn(
+              'flex items-center justify-end gap-3 transition-all duration-300',
+              isStuck ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-1 opacity-0'
+            )}
+          >
+            <UserNavMenu showText={false} />
+            <CartNavButton />
+          </div>
         </div>
       </nav>
     </>

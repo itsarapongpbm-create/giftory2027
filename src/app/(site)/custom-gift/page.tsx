@@ -3,6 +3,7 @@ import { getSiteUrl } from '@/utils/siteUrl';
 import { generateThaiKeywords } from '@/utils/thaiKeywords';
 import CustomGiftPageClient from './CustomGiftPageClient';
 import { getCustomGiftPageItems } from '@/lib/customGiftPage';
+import { getContactSettings } from '@/lib/siteSettings';
 
 const BASE_URL = getSiteUrl();
 
@@ -29,9 +30,12 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 const CustomGiftPage = async () => {
-  const items = await getCustomGiftPageItems();
+  const [items, contactSettings] = await Promise.all([
+    getCustomGiftPageItems(),
+    getContactSettings(),
+  ]);
 
-  return <CustomGiftPageClient items={items} />;
+  return <CustomGiftPageClient items={items} contactSettings={contactSettings} />;
 };
 
 export default CustomGiftPage;

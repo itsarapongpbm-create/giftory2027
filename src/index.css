@@ -64,9 +64,10 @@ body,
   }
 }
 
-/* Smooth scrolling for the entire page */
-html {
-  scroll-behavior: smooth;
+/* Hardware-accelerated image scaling to prevent stutter on hover */
+img {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 @keyframes best-seller-marquee {

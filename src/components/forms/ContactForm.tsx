@@ -67,14 +67,13 @@ const ContactForm = () => {
       toast.error('Please fill in all required fields correctly.', {
         duration: 4000,
         className: 'font-light text-sm',
-        icon: '⚠️',
       });
       return;
     }
 
     setIsSubmitting(true);
 
-    toast.loading('📤 Thank you for interest in our catalog....', {
+    toast.loading('Thank you for interest in our catalog...', {
       duration: 5000,
       className: 'font-light text-sm',
     });

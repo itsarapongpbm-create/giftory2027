@@ -2,40 +2,23 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { OutlineButton } from '@/components/buttons';
-import { ContactForm } from '@/components/forms';
 import { useSiteConfig } from './SiteConfigContext';
+// import CatalogCtaSection from './CatalogCtaSection';
 
 const MainFooter = () => {
   const { companyName } = useSiteConfig();
 
+  // Set to true whenever we want to show the "See the Catalog" CTA above the footer
+  const SHOW_CATALOG_CTA = false;
+
   return (
     <div>
-      {/* Catalog CTA Strip */}
-      <div className="flex flex-col items-center justify-center bg-main-white px-4 py-10">
-        <OutlineButton
-          color="primary"
-          size="lg"
-          onClick={() =>
-            (document.getElementById('open_catalog_dialog') as HTMLDialogElement)?.showModal()
-          }
-        >
-          See the Catalog
-        </OutlineButton>
-        <dialog id="open_catalog_dialog" className="modal !rounded-none !p-0">
-          <div className="modal-box w-full !rounded-none !p-0">
-            <form method="dialog">
-              <button
-                aria-label="Close catalog dialog"
-                className="btn btn-ghost btn-sm btn-circle absolute right-4 top-4"
-              >
-                ✕
-              </button>
-            </form>
-            <ContactForm />
-          </div>
-        </dialog>
-      </div>
+      {/* Catalog CTA Strip (Preserved in CatalogCtaSection.tsx, currently hidden) */}
+      {SHOW_CATALOG_CTA && (
+        <div className="flex flex-col items-center justify-center bg-main-white px-4 py-10">
+          {/* <CatalogCtaSection /> */}
+        </div>
+      )}
 
       {/* Minimal Clean Dark Footer */}
       <footer className="border-t border-white/10 bg-[#0E0C0B] px-6 py-10 text-main-white">

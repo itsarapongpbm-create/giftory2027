@@ -97,17 +97,10 @@ export default function CategoryShowcaseSection({
       {/* Bottom Carousel (Products Preview Slider) */}
       {products.length > 0 && (
         <div className="mt-8 md:mt-12">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4">
             <h3 className="text-sm font-light uppercase tracking-wider text-shadow-black/60">
               สินค้าแนะนำในหมวดนี้
             </h3>
-            <Link
-              href={`/baskets/${showcase.slug}`}
-              className="group inline-flex items-center gap-1 text-xs font-light text-maroon hover:underline sm:text-sm"
-            >
-              <span>ดูทั้งหมด ({products.length})</span>
-              <span className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
-            </Link>
           </div>
 
           <CategoryProductCarousel products={products} categorySlug={showcase.slug} />

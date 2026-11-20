@@ -1,10 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ProductCard } from '@/components/cards';
 import type { CatalogProduct } from '@/lib/catalog';
 import type { CategoryShowcase } from '@/lib/siteSettings';
+import { cn } from '@/utils';
 
 type CategoryProductsClientProps = {
   categorySlug: string;
@@ -14,6 +15,12 @@ type CategoryProductsClientProps = {
 };
 
 type SortMode = 'default' | 'price-asc' | 'price-desc';
+
+const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
+  { value: 'default', label: 'เรียงตาม: แนะนำ' },
+  { value: 'price-asc', label: 'ราคา: น้อยไปมาก' },
+  { value: 'price-desc', label: 'ราคา: มากไปน้อย' },
+];
 
 const sortProducts = (items: CatalogProduct[], mode: SortMode) => {
   if (mode === 'default') return items;
@@ -33,8 +40,34 @@ export default function CategoryProductsClient({
 }: CategoryProductsClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('default');
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   const isSpecialCustomDesign = categorySlug === 'special-custom-design';
+
+  // Close dropdown on click outside or Escape
+  useEffect(() => {
+    if (!isSortOpen) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsSortOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSortOpen]);
 
   const filteredProducts = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -48,6 +81,9 @@ export default function CategoryProductsClient({
 
     return sortProducts(matched, sortMode);
   }, [products, searchQuery, sortMode]);
+
+  const currentSortLabel =
+    SORT_OPTIONS.find(opt => opt.value === sortMode)?.label || 'เรียงตาม: แนะนำ';
 
   return (
     <div className="min-h-[calc(100dvh-290px)] bg-main-white pb-16">
@@ -97,7 +133,7 @@ export default function CategoryProductsClient({
               {/* Search with Magnifying Glass Icon */}
               <div className="relative">
                 <svg
-                  className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-shadow-black/40"
+                  className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-shadow-black/40"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -116,21 +152,89 @@ export default function CategoryProductsClient({
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="ค้นหาในหมวดนี้..."
                   aria-label="Search baskets in this category"
-                  className="w-full border border-shadow-black/20 bg-white py-2 pl-9 pr-3 text-sm font-light outline-none transition-colors focus:border-maroon sm:w-56"
+                  className="w-full rounded-full border border-shadow-black/15 bg-white py-2 pl-9 pr-8 text-sm font-light shadow-sm outline-none transition-all duration-200 placeholder:text-shadow-black/40 focus:border-maroon focus:ring-1 focus:ring-maroon/20 sm:w-60"
                 />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery('')}
+                    aria-label="Clear search"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-shadow-black/40 transition-colors hover:text-maroon"
+                  >
+                    ✕
+                  </button>
+                )}
               </div>
 
-              {/* Sort Dropdown */}
-              <select
-                value={sortMode}
-                onChange={e => setSortMode(e.target.value as SortMode)}
-                aria-label="Sort baskets"
-                className="cursor-pointer border border-shadow-black/20 bg-white px-3 py-2 text-sm font-light outline-none transition-colors focus:border-maroon"
-              >
-                <option value="default">เรียงตาม: แนะนำ</option>
-                <option value="price-asc">ราคา: น้อยไปมาก</option>
-                <option value="price-desc">ราคา: มากไปน้อย</option>
-              </select>
+              {/* Custom Smooth Sort Dropdown */}
+              <div ref={sortDropdownRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setIsSortOpen(prev => !prev)}
+                  aria-haspopup="listbox"
+                  aria-expanded={isSortOpen}
+                  className="inline-flex w-full items-center justify-between gap-3 rounded-full border border-shadow-black/15 bg-white px-4 py-2 text-sm font-light text-shadow-black shadow-sm transition-all duration-200 hover:border-maroon hover:bg-slate-50/50 sm:w-auto"
+                >
+                  <span>{currentSortLabel}</span>
+                  <svg
+                    className={cn(
+                      'size-3.5 text-shadow-black/50 transition-transform duration-200',
+                      isSortOpen && 'rotate-180 text-maroon'
+                    )}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {isSortOpen && (
+                  <div
+                    role="listbox"
+                    aria-label="Sort options"
+                    className="absolute right-0 top-full z-40 mt-1.5 min-w-[190px] overflow-hidden rounded-xl border border-shadow-black/10 bg-white/95 p-1 shadow-xl backdrop-blur-md transition-all"
+                  >
+                    {SORT_OPTIONS.map(option => {
+                      const isSelected = sortMode === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => {
+                            setSortMode(option.value);
+                            setIsSortOpen(false);
+                          }}
+                          className={cn(
+                            'flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-light transition-colors',
+                            isSelected
+                              ? 'bg-maroon/10 font-normal text-maroon'
+                              : 'text-shadow-black/80 hover:bg-maroon/5 hover:text-maroon'
+                          )}
+                        >
+                          <span>{option.label}</span>
+                          {isSelected && (
+                            <svg
+                              className="size-4 text-maroon"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              aria-hidden="true"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

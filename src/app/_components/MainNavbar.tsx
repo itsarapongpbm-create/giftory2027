@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { CloseIcon, HamburgerMenuIcon } from '@/components/icons';
+import { CloseIcon, HamburgerMenuIcon, CartIcon } from '@/components/icons';
+import CartNavButton from '@/components/navigation/CartNavButton';
+import UserNavMenu from '@/components/navigation/UserNavMenu';
+import { useCustomerAuth } from '@/context/CustomerAuthContext';
+import { useCart } from '@/context/CartContext';
 import { cn } from '@/utils';
 
 export const NAV_ITEMS = [
@@ -20,6 +24,8 @@ const LOGO_URL = 'https://images.giftoryth.com/giftoryth-public/images/logos/log
 const MainNavbar = () => {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isLoggedIn, user, logout } = useCustomerAuth();
+  const { totalItems, openCart } = useCart();
 
   const isActive = (path: string) => pathname === path || pathname === `${path}/`;
 
@@ -48,7 +54,7 @@ const MainNavbar = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-shadow-black/10 bg-main-white/95 backdrop-blur-md lg:static lg:border-b-0 lg:bg-main-white lg:backdrop-blur-none">
+      <header className="sticky top-0 z-50 w-full border-b border-shadow-black/10 bg-main-white/95 backdrop-blur-md lg:relative lg:z-[60] lg:border-b-0 lg:bg-main-white lg:backdrop-blur-none">
         <div className="mx-auto grid h-16 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-4 md:px-6 lg:h-[88px]">
           <div className="flex items-center justify-start">
             <button
@@ -75,7 +81,10 @@ const MainNavbar = () => {
             </Link>
           </div>
 
-          <div className="flex items-center justify-end" />
+          <div className="flex items-center justify-end gap-1.5 sm:gap-3">
+            <UserNavMenu showText={true} />
+            <CartNavButton />
+          </div>
         </div>
       </header>
 
@@ -142,6 +151,53 @@ const MainNavbar = () => {
               })}
             </ul>
           </nav>
+
+          {/* Mobile Drawer Auth & Cart Footer */}
+          <div className="border-t border-shadow-black/10 p-4">
+            <button
+              type="button"
+              onClick={() => {
+                setIsMobileMenuOpen(false);
+                openCart();
+              }}
+              className="mb-3 flex w-full items-center justify-between border border-shadow-black/20 bg-white px-3.5 py-2.5 text-xs text-shadow-black transition-colors hover:border-maroon"
+            >
+              <span className="flex items-center gap-2">
+                <CartIcon className="size-4" />
+                <span>ตะกร้าสินค้า</span>
+              </span>
+              <span className="rounded-full bg-maroon px-2 py-0.5 text-[11px] text-white">
+                {totalItems}
+              </span>
+            </button>
+
+            {isLoggedIn ? (
+              <div className="flex items-center justify-between border border-shadow-black/10 bg-white p-2.5">
+                <div className="min-w-0 flex-1 pr-2">
+                  <p className="truncate text-xs font-medium text-shadow-black">{user?.name}</p>
+                  <p className="truncate text-[10px] text-shadow-black/60">{user?.email}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    logout();
+                  }}
+                  className="shrink-0 text-xs text-main-red hover:underline"
+                >
+                  ออก
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block w-full border border-maroon bg-maroon py-2.5 text-center text-xs font-light text-white transition-colors hover:bg-main hover:border-main"
+              >
+                เข้าสู่ระบบ / สมัครสมาชิก
+              </Link>
+            )}
+          </div>
         </aside>
       </div>
     </>

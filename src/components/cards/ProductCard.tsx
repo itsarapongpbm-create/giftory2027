@@ -20,21 +20,24 @@ const ProductCard = ({
 }: Product.ProductCardProps) => {
   const priceFormat = formatPrice(price || 0);
 
+  const isCustomBasket = defaultBackground || Boolean(id?.startsWith('custom-'));
+
   const cardClassName = cn(
-    'hover:shadow-card group card relative aspect-[2/3] max-h-[550px] w-full overflow-hidden rounded-none bg-white bg-opacity-70 shadow-sm md:max-h-full',
+    'hover:shadow-card group card relative aspect-[2/3] max-h-[550px] w-full overflow-hidden rounded-none shadow-sm md:max-h-full',
+    isCustomBasket ? 'bg-maroon place-items-baseline' : 'bg-white bg-opacity-70',
     !disabledLink && 'cursor-pointer',
     className
   );
 
   const content = (
     <>
-      {defaultBackground && (
+      {isCustomBasket && (
         <Image
-          src="/images/background-product-2.webp"
+          src="/images/background-product-clean.webp"
           alt=""
           fill
           sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 30vw, 80vw"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 size-full scale-[1.04] object-cover object-top"
           priority={false}
         />
       )}
@@ -43,7 +46,11 @@ const ProductCard = ({
         alt={title || 'Product image'}
         fill
         sizes="(min-width: 1280px) 18vw, (min-width: 1024px) 24vw, (min-width: 640px) 48vw, 90vw"
-        className={cn('h-[calc(100%-90px)] w-full object-cover', imageClassName)}
+        className={cn(
+          isCustomBasket
+            ? cn('w-full', imageClassName || 'h-[90%] absolute bottom-0 object-contain')
+            : cn('h-[calc(100%-90px)] w-full object-cover', imageClassName)
+        )}
       />
       {(title || details) && (
         <div className="absolute inset-0 flex items-end transition-opacity duration-200 group-hover:bg-shadow-black/25">

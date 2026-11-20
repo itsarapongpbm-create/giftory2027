@@ -2,11 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSiteConfig } from '@/app/_components/SiteConfigContext';
-import { OutlineButton } from '@/components/buttons';
 import { ProductCard } from '@/components/cards';
+import { CartIcon, LineIcon } from '@/components/icons';
 import ProductDetailsList from '@/components/products/ProductDetailsList';
+import { useCart } from '@/context/CartContext';
 import type { CatalogGalleryImage, CatalogProduct } from '@/lib/catalog';
 import { cn } from '@/utils/className';
 import { formatPrice } from '@/utils/string';
@@ -28,8 +30,14 @@ type BasketDetailClientProps = {
 };
 
 const BasketDetailClient = ({ product, relatedProducts = [] }: BasketDetailClientProps) => {
+  const router = useRouter();
   const { lineLink } = useSiteConfig();
+  const { addItem } = useCart();
+  const [quantity, setQuantity] = useState(1);
   const priceFormat = formatPrice(product.price || 0);
+
+  const isSpecialCustom =
+    product.categorySlug === 'special-custom-design' || product.id.startsWith('custom-');
 
   const allImages = [
     { id: 'main', url: product.image, alt: product.title },
@@ -43,6 +51,37 @@ const BasketDetailClient = ({ product, relatedProducts = [] }: BasketDetailClien
   const [activeIndex, setActiveIndex] = useState(0);
   const activeImage = allImages[activeIndex] || allImages[0];
   const hasGallery = allImages.length > 1;
+
+  const handleAddToCart = () => {
+    addItem(
+      {
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.image,
+        categorySlug: product.categorySlug,
+        categoryName: product.categoryName,
+      },
+      quantity,
+      true
+    );
+  };
+
+  const handleBuyNow = () => {
+    addItem(
+      {
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.image,
+        categorySlug: product.categorySlug,
+        categoryName: product.categoryName,
+      },
+      quantity,
+      false
+    );
+    router.push('/checkout');
+  };
 
   const handleBuyClick = () => {
     const message = encodeURIComponent(
@@ -87,18 +126,32 @@ const BasketDetailClient = ({ product, relatedProducts = [] }: BasketDetailClien
           <div className={cn('grid grid-cols-1 gap-3 lg:grid-cols-2 lg:gap-6', product.gridStyle)}>
             <div
               className={cn(
-                'flex flex-col items-center justify-center bg-white p-4 sm:p-6',
+                'relative flex flex-col items-center justify-center p-4 sm:p-6 min-h-[380px] sm:min-h-[460px] overflow-hidden',
+                isSpecialCustom ? 'bg-maroon' : 'bg-white',
                 product.imageContainerClassName
               )}
             >
-              <div className="group relative mx-auto w-full max-w-[480px] overflow-hidden">
+              {isSpecialCustom && (
+                <Image
+                  src="/images/background-product-clean.webp"
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 50vw, 100vw"
+                  className="absolute inset-0 size-full scale-[1.04] object-cover object-top"
+                  priority={false}
+                />
+              )}
+              <div className="group relative z-10 mx-auto flex w-full max-w-[480px] items-center justify-center overflow-hidden">
                 <Image
                   key={activeImage.url}
                   src={activeImage.url}
                   alt={activeImage.alt}
                   width={800}
                   height={800}
-                  className="h-auto w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  className={cn(
+                    'h-auto w-full transition-transform duration-700 group-hover:scale-[1.03]',
+                    isSpecialCustom ? 'max-h-[460px] object-contain drop-shadow-lg' : 'object-cover'
+                  )}
                   sizes="(min-width: 1280px) 28vw, (min-width: 1024px) 40vw, 90vw"
                   priority
                 />
@@ -125,7 +178,7 @@ const BasketDetailClient = ({ product, relatedProducts = [] }: BasketDetailClien
               </div>
 
               {hasGallery && (
-                <div className="mt-4 flex w-full max-w-[480px] gap-2 overflow-x-auto pb-1">
+                <div className="relative z-10 mt-4 flex w-full max-w-[480px] gap-2 overflow-x-auto pb-1">
                   {allImages.map((img, idx) => (
                     <button
                       key={img.id}
@@ -133,13 +186,20 @@ const BasketDetailClient = ({ product, relatedProducts = [] }: BasketDetailClien
                       onClick={() => setActiveIndex(idx)}
                       aria-label={`View photo ${idx + 1}`}
                       className={cn(
-                        'relative size-16 shrink-0 overflow-hidden border-2 bg-main-white transition-all',
+                        'relative size-16 shrink-0 overflow-hidden border-2 transition-all',
+                        isSpecialCustom ? 'bg-maroon/30' : 'bg-main-white',
                         idx === activeIndex
-                          ? 'border-maroon opacity-100'
+                          ? 'border-maroon opacity-100 ring-2 ring-maroon/50'
                           : 'border-transparent opacity-60 hover:opacity-100'
                       )}
                     >
-                      <Image src={img.url} alt={img.alt} fill sizes="64px" className="object-cover" />
+                      <Image
+                        src={img.url}
+                        alt={img.alt}
+                        fill
+                        sizes="64px"
+                        className={isSpecialCustom ? 'object-contain p-1' : 'object-cover'}
+                      />
                     </button>
                   ))}
                 </div>
@@ -178,21 +238,80 @@ const BasketDetailClient = ({ product, relatedProducts = [] }: BasketDetailClien
                       THB
                     </span>
                   </div>
+
+                  {/* Quantity Stepper */}
+                  <div className="mt-4 flex items-center gap-3">
+                    <span className="text-xs font-light text-shadow-black/70">จำนวน:</span>
+                    <div className="flex items-center border border-shadow-black/20 bg-white">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                        className="px-3 py-1.5 text-xs text-shadow-black/70 transition-colors hover:bg-shadow-black/5"
+                        aria-label="Decrease quantity"
+                      >
+                        -
+                      </button>
+                      <span className="w-10 text-center text-xs font-medium text-shadow-black">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(prev => prev + 1)}
+                        className="px-3 py-1.5 text-xs text-shadow-black/70 transition-colors hover:bg-shadow-black/5"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ) : null}
 
               <div className="space-y-3">
-                <OutlineButton
-                  color="primary"
-                  size="lg"
+                {product.price ? (
+                  <div className="flex flex-col gap-2.5 sm:flex-row">
+                    <button
+                      type="button"
+                      onClick={handleAddToCart}
+                      className="flex flex-1 items-center justify-center gap-2 border border-maroon bg-maroon px-5 py-3 text-sm font-light tracking-wide text-white transition-all hover:bg-main hover:border-main"
+                    >
+                      <CartIcon className="size-4" />
+                      <span>เพิ่มลงในตะกร้า</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleBuyNow}
+                      className="flex flex-1 items-center justify-center border border-shadow-black/30 bg-white px-5 py-3 text-sm font-light tracking-wide text-shadow-black transition-all hover:border-maroon hover:text-maroon"
+                    >
+                      สั่งซื้อทันที
+                    </button>
+                  </div>
+                ) : null}
+
+                <button
+                  type="button"
                   onClick={handleBuyClick}
-                  className="w-full text-sm font-light tracking-wide sm:w-[260px] sm:text-base md:w-[300px]"
+                  className="flex w-full items-center justify-center gap-2 border border-[#06C755] bg-[#06C755]/10 px-5 py-2.5 text-xs font-light tracking-wide text-[#06C755] transition-colors hover:bg-[#06C755] hover:text-white"
                 >
-                  Order via Line
-                </OutlineButton>
-                <p className="mt-2 text-[11px] font-light text-shadow-black/60 sm:text-xs md:text-sm">
-                  Free consultation • Custom arrangements available
-                </p>
+                  <LineIcon className="size-4 fill-current" />
+                  <span>ปรึกษาจัดกระเช้า / สั่งผ่าน LINE</span>
+                </button>
+
+                {/* Gift Shop Guarantees */}
+                <div className="mt-4 border-t border-shadow-black/10 pt-3 text-[11px] font-light text-shadow-black/70 space-y-1.5">
+                  <p className="flex items-start gap-2">
+                    <span className="text-maroon">•</span>
+                    <span>แถมฟรีการ์ดอวยพร พิมพ์ข้อความและผูกริบบิ้นพรีเมียม</span>
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <span className="text-maroon">•</span>
+                    <span>กำหนดวันจัดส่งล่วงหน้าได้ พร้อมจัดส่งด่วนทั่วกรุงเทพฯ และปริมณฑล</span>
+                  </p>
+                  <p className="flex items-start gap-2">
+                    <span className="text-maroon">•</span>
+                    <span>สามารถออกใบกำกับภาษีสำหรับนิติบุคคลและบุคคลธรรมดาได้</span>
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -212,9 +331,24 @@ const BasketDetailClient = ({ product, relatedProducts = [] }: BasketDetailClien
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {relatedProducts.map(item => (
-                <ProductCard key={item.id} {...item} />
-              ))}
+              {relatedProducts.map(item => {
+                const itemIsCustom =
+                  item.categorySlug === 'special-custom-design' ||
+                  item.id.startsWith('custom-');
+                return (
+                  <ProductCard
+                    key={item.id}
+                    {...item}
+                    defaultBackground={itemIsCustom}
+                    className={itemIsCustom ? 'relative place-items-baseline bg-maroon' : undefined}
+                    imageClassName={
+                      itemIsCustom
+                        ? item.imageClassName || 'w-full h-[90%] absolute bottom-0 object-contain'
+                        : item.imageClassName
+                    }
+                  />
+                );
+              })}
             </div>
           </div>
         )}
