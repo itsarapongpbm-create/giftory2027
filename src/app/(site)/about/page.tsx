@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getSiteUrl } from '@/utils/siteUrl';
 import { generateThaiKeywords } from '@/utils/thaiKeywords';
 import { getAboutSettings } from '@/lib/siteSettings';
+import AboutWhyGiftorySection from './AboutWhyGiftorySection';
 
 const BASE_URL = getSiteUrl();
 
@@ -31,6 +32,7 @@ const AboutPage = async () => {
 
   return (
     <>
+      {/* Desktop 2x2 Grid */}
       <div className="relative mx-auto mb-4 hidden min-h-[calc(100dvh-290px)] w-full max-w-[1200px] grid-cols-2 lg:grid">
         <div className="h-[500px] bg-beige">
           <Image
@@ -63,6 +65,8 @@ const AboutPage = async () => {
           />
         </div>
       </div>
+
+      {/* Mobile Stacked Layout */}
       <div className="mx-auto mb-4 flex min-h-[calc(100dvh-290px)] w-full max-w-[1200px] flex-col lg:hidden">
         <div className="relative h-[500px] bg-beige">
           <Image
@@ -95,6 +99,9 @@ const AboutPage = async () => {
           </div>
         </div>
       </div>
+
+      {/* Why Giftory TH - Corporate Trust & Excellence Pillars */}
+      <AboutWhyGiftorySection />
     </>
   );
 };
