@@ -1,8 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import ConfirmSubmitButton from '../_components/ConfirmSubmitButton';
-import { deleteCustomGiftItem } from './actions';
+import StatusBanner from '../_components/StatusBanner';
+import CustomGiftHeroSettingsForm from './CustomGiftHeroSettingsForm';
+import { deleteCustomGiftItem, updateCustomGiftHeroSettings } from './actions';
 import { getCustomGiftPageItems } from '@/lib/customGiftPage';
+import { getCustomGiftHeroSettings } from '@/lib/siteSettings';
 
 const PAGE_SIZE = 12;
 
@@ -11,16 +14,25 @@ type AdminCustomGiftPageProps = {
     q?: string;
     status?: string;
     page?: string;
+    saved?: string;
+    error?: string;
   }>;
 };
 
 const inputClass = 'border border-shadow-black/20 px-3 py-2 text-sm outline-none focus:border-maroon';
 
 const AdminCustomGiftPage = async ({ searchParams }: AdminCustomGiftPageProps) => {
-  const params = await searchParams;
+  const [params, heroSettings] = await Promise.all([
+    searchParams,
+    getCustomGiftHeroSettings(),
+  ]);
+
   const q = params.q?.trim().toLowerCase() || '';
   const status = params.status || '';
+  const saved = params.saved || '';
+  const error = params.error || '';
   const currentPage = Math.max(Number(params.page || 1), 1);
+
   const items = await getCustomGiftPageItems({ includeHidden: true });
   const filteredItems = items.filter(item => {
     const matchesSearch =
@@ -55,9 +67,42 @@ const AdminCustomGiftPage = async ({ searchParams }: AdminCustomGiftPageProps) =
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-light">Custom Gift</h1>
+          <h1 className="text-2xl font-light">Custom Gift Page</h1>
           <p className="mt-1 text-sm font-light text-shadow-black/60">
-            Manage storefront custom gift images.
+            Manage storefront custom gift hero background banner and portfolio gallery items.
+          </p>
+        </div>
+        <Link
+          href="/custom-gift"
+          target="_blank"
+          className="border border-shadow-black/20 px-4 py-2 text-sm font-light transition-colors hover:border-maroon hover:text-maroon"
+        >
+          View Storefront Page ↗
+        </Link>
+      </div>
+
+      <StatusBanner
+        saved={saved === '1' || saved === 'hero'}
+        savedMessage={saved === 'hero' ? 'Custom gift hero background saved.' : 'Custom gift item saved.'}
+        errorMessage={error === 'missing-fields' ? 'Please fill in all required fields.' : undefined}
+      />
+
+      {/* Hero & Background Settings Form */}
+      <div className="mt-8">
+        <CustomGiftHeroSettingsForm
+          action={updateCustomGiftHeroSettings}
+          settings={heroSettings}
+          inputClass="w-full border border-shadow-black/20 px-3 py-2 text-sm outline-none focus:border-maroon"
+          labelClass="text-sm font-light text-shadow-black/70"
+        />
+      </div>
+
+      {/* Items Section Header */}
+      <div className="mt-12 flex flex-wrap items-end justify-between gap-4 border-t border-shadow-black/10 pt-8">
+        <div>
+          <h2 className="text-xl font-light">Custom Gift Portfolio Items</h2>
+          <p className="mt-1 text-sm font-light text-shadow-black/60">
+            Manage slots and images shown in the gallery grid on the storefront.
           </p>
         </div>
         <Link href="/admin/custom-gift/new" className="bg-maroon px-4 py-2 text-sm font-light text-main-white">
@@ -65,7 +110,7 @@ const AdminCustomGiftPage = async ({ searchParams }: AdminCustomGiftPageProps) =
         </Link>
       </div>
 
-      <form className="mt-8 grid gap-3 border border-shadow-black/10 bg-white p-4 md:grid-cols-[1fr_180px_auto_auto]">
+      <form className="mt-6 grid gap-3 border border-shadow-black/10 bg-white p-4 md:grid-cols-[1fr_180px_auto_auto]">
         <input name="q" defaultValue={q} placeholder="Search title or slot" className={inputClass} />
         <select name="status" defaultValue={status} className={inputClass}>
           <option value="">All status</option>
@@ -84,7 +129,7 @@ const AdminCustomGiftPage = async ({ searchParams }: AdminCustomGiftPageProps) =
         Showing {from}-{to} of {totalItems} items
       </div>
 
-      <div className="mt-8 overflow-x-auto border border-shadow-black/10 bg-white">
+      <div className="mt-4 overflow-x-auto border border-shadow-black/10 bg-white">
         <table className="w-full min-w-[820px] text-left text-sm">
           <thead className="border-b border-shadow-black/10 bg-main-white">
             <tr>
@@ -148,40 +193,30 @@ const AdminCustomGiftPage = async ({ searchParams }: AdminCustomGiftPageProps) =
       </div>
 
       {totalPages > 1 && (
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-          <Link
-            href={pageHref(Math.max(currentPage - 1, 1))}
-            className="border border-shadow-black/20 px-4 py-2 text-sm font-light aria-disabled:pointer-events-none aria-disabled:opacity-40"
-            aria-disabled={currentPage <= 1}
-          >
-            Previous
-          </Link>
-          <div className="flex flex-wrap gap-2">
-            {Array.from({ length: totalPages }).map((_, index) => {
-              const page = index + 1;
+        <div className="mt-6 flex items-center justify-center gap-2">
+          {currentPage > 1 ? (
+            <Link href={pageHref(currentPage - 1)} className="border border-shadow-black/20 px-3 py-1.5 text-sm font-light">
+              Previous
+            </Link>
+          ) : (
+            <span className="border border-shadow-black/10 px-3 py-1.5 text-sm font-light text-shadow-black/30">
+              Previous
+            </span>
+          )}
 
-              return (
-                <Link
-                  key={page}
-                  href={pageHref(page)}
-                  className={
-                    page === currentPage
-                      ? 'bg-maroon px-3 py-2 text-sm text-main-white'
-                      : 'border border-shadow-black/20 px-3 py-2 text-sm font-light'
-                  }
-                >
-                  {page}
-                </Link>
-              );
-            })}
-          </div>
-          <Link
-            href={pageHref(Math.min(currentPage + 1, totalPages))}
-            className="border border-shadow-black/20 px-4 py-2 text-sm font-light aria-disabled:pointer-events-none aria-disabled:opacity-40"
-            aria-disabled={currentPage >= totalPages}
-          >
-            Next
-          </Link>
+          <span className="px-3 py-1.5 text-sm font-light">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          {currentPage < totalPages ? (
+            <Link href={pageHref(currentPage + 1)} className="border border-shadow-black/20 px-3 py-1.5 text-sm font-light">
+              Next
+            </Link>
+          ) : (
+            <span className="border border-shadow-black/10 px-3 py-1.5 text-sm font-light text-shadow-black/30">
+              Next
+            </span>
+          )}
         </div>
       )}
     </div>
@@ -189,4 +224,3 @@ const AdminCustomGiftPage = async ({ searchParams }: AdminCustomGiftPageProps) =
 };
 
 export default AdminCustomGiftPage;
-

@@ -7,6 +7,10 @@ import { requireAdmin } from '@/lib/adminAuth';
 import { deleteManagedImageIfUnused } from '@/lib/mediaCleanup';
 import { prisma } from '@/lib/prisma';
 import { uploadSiteImage } from '@/lib/storage';
+import {
+  CUSTOM_GIFT_HERO_SETTING_KEYS,
+  getCustomGiftHeroSettings,
+} from '@/lib/siteSettings';
 
 const toString = (value: FormDataEntryValue | null) => String(value || '').trim();
 const toBool = (value: FormDataEntryValue | null) => value === 'on';
@@ -135,4 +139,47 @@ export const deleteCustomGiftItem = async (formData: FormData) => {
   }
 
   revalidateCustomGiftPaths();
+};
+
+export const updateCustomGiftHeroSettings = async (formData: FormData) => {
+  await requireAdmin();
+
+  const previous = await getCustomGiftHeroSettings();
+  const tag = toString(formData.get('tag'));
+  const title = toString(formData.get('title'));
+  const description = toString(formData.get('description'));
+  const bgAlt = toString(formData.get('bgAlt'));
+
+  const imageFile = formData.get('bgImageFile');
+  const uploadedImage =
+    imageFile instanceof File && imageFile.size > 0
+      ? await uploadSiteImage(imageFile, 'custom-gift-hero-bg')
+      : null;
+  const bgImage = uploadedImage?.imageUrl || toString(formData.get('bgImage'));
+
+  if (!title || !bgImage) {
+    redirect('/admin/custom-gift?error=missing-fields');
+  }
+
+  const upsertSetting = (key: string, value: string) =>
+    prisma.siteSetting.upsert({
+      where: { key },
+      create: { key, value },
+      update: { value },
+    });
+
+  await Promise.all([
+    upsertSetting(CUSTOM_GIFT_HERO_SETTING_KEYS.tag, tag),
+    upsertSetting(CUSTOM_GIFT_HERO_SETTING_KEYS.title, title),
+    upsertSetting(CUSTOM_GIFT_HERO_SETTING_KEYS.description, description),
+    upsertSetting(CUSTOM_GIFT_HERO_SETTING_KEYS.bgImage, bgImage),
+    upsertSetting(CUSTOM_GIFT_HERO_SETTING_KEYS.bgAlt, bgAlt),
+  ]);
+
+  if (previous.bgImage && previous.bgImage !== bgImage) {
+    await deleteManagedImageIfUnused(previous.bgImage);
+  }
+
+  revalidateCustomGiftPaths();
+  redirect('/admin/custom-gift?saved=hero');
 };

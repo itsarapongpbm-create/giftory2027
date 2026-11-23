@@ -2,11 +2,15 @@
 
 import { useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import type { CustomGiftPageItem } from '@/lib/customGiftPage';
+export type LightboxItem = {
+  image: string;
+  title?: string;
+  slot?: number;
+};
 
 type CustomGiftLightboxProps = {
   isOpen: boolean;
-  items: CustomGiftPageItem[];
+  items: LightboxItem[];
   currentIndex: number;
   onClose: () => void;
   onNavigate: (nextIndex: number) => void;
@@ -182,7 +186,7 @@ const CustomGiftLightbox = ({
           </p>
         )}
         <p className="mt-1 text-xs font-extralight tracking-widest text-main-white/40">
-          Slot {currentItem.slot}
+          {currentItem.slot ? `Slot ${currentItem.slot}` : 'Giftory Bespoke Showcase'}
         </p>
       </div>
     </div>

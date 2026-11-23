@@ -24,6 +24,23 @@ export const DEFAULT_CUSTOM_GIFT_SETTINGS = {
   rightAlt2: 'Bow bag',
 };
 
+export const CUSTOM_GIFT_HERO_SETTING_KEYS = {
+  tag: 'customGift.hero.tag',
+  title: 'customGift.hero.title',
+  description: 'customGift.hero.description',
+  bgImage: 'customGift.hero.bgImage',
+  bgAlt: 'customGift.hero.bgAlt',
+} as const;
+
+export const DEFAULT_CUSTOM_GIFT_HERO_SETTINGS = {
+  tag: 'Bespoke Gifting Service',
+  title: 'Custom Gift — ศิลปะแห่งการมอบของขวัญเฉพาะคุณ',
+  description:
+    'ส่งต่อความรู้สึกอันทรงคุณค่าผ่านของขวัญสั่งทำพิเศษ คัดสรรสินค้าพรีเมียมและออกแบบทุกองค์ประกอบด้วยความประณีต เพื่อสะท้อนความตั้งใจและเอกลักษณ์เฉพาะตัวของคุณอย่างสมบูรณ์แบบ',
+  bgImage: '/images/home-cover.webp',
+  bgAlt: 'Custom Gift Hero Background',
+};
+
 export const PDM_KAIKU_SETTING_KEYS = {
   title: 'home.pdmKaiku.title',
   subtitle: 'home.pdmKaiku.subtitle',
@@ -191,6 +208,7 @@ export const DEFAULT_CONTACT_SETTINGS = {
 export type ContactSettings = typeof DEFAULT_CONTACT_SETTINGS;
 export type AboutSettings = typeof DEFAULT_ABOUT_SETTINGS;
 export type CustomGiftSettings = typeof DEFAULT_CUSTOM_GIFT_SETTINGS;
+export type CustomGiftHeroSettings = typeof DEFAULT_CUSTOM_GIFT_HERO_SETTINGS;
 export type PdmKaikuSettings = typeof DEFAULT_PDM_KAIKU_SETTINGS;
 export type NewArrivalsSettings = typeof DEFAULT_NEW_ARRIVALS_SETTINGS;
 export type InstagramFeedSettings = typeof DEFAULT_INSTAGRAM_FEED_SETTINGS;
@@ -239,6 +257,18 @@ export const getCustomGiftSettings = async (): Promise<CustomGiftSettings> => {
     rightAlt1: settings.get(CUSTOM_GIFT_SETTING_KEYS.rightAlt1) || DEFAULT_CUSTOM_GIFT_SETTINGS.rightAlt1,
     rightImage2: settings.get(CUSTOM_GIFT_SETTING_KEYS.rightImage2) || DEFAULT_CUSTOM_GIFT_SETTINGS.rightImage2,
     rightAlt2: settings.get(CUSTOM_GIFT_SETTING_KEYS.rightAlt2) || DEFAULT_CUSTOM_GIFT_SETTINGS.rightAlt2,
+  };
+};
+
+export const getCustomGiftHeroSettings = async (): Promise<CustomGiftHeroSettings> => {
+  const settings = await getSiteSettings(Object.values(CUSTOM_GIFT_HERO_SETTING_KEYS));
+
+  return {
+    tag: settings.get(CUSTOM_GIFT_HERO_SETTING_KEYS.tag) || DEFAULT_CUSTOM_GIFT_HERO_SETTINGS.tag,
+    title: settings.get(CUSTOM_GIFT_HERO_SETTING_KEYS.title) || DEFAULT_CUSTOM_GIFT_HERO_SETTINGS.title,
+    description: settings.get(CUSTOM_GIFT_HERO_SETTING_KEYS.description) || DEFAULT_CUSTOM_GIFT_HERO_SETTINGS.description,
+    bgImage: settings.get(CUSTOM_GIFT_HERO_SETTING_KEYS.bgImage) || DEFAULT_CUSTOM_GIFT_HERO_SETTINGS.bgImage,
+    bgAlt: settings.get(CUSTOM_GIFT_HERO_SETTING_KEYS.bgAlt) || DEFAULT_CUSTOM_GIFT_HERO_SETTINGS.bgAlt,
   };
 };
 

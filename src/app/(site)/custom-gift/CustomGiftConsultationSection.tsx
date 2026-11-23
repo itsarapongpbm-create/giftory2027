@@ -21,15 +21,15 @@ const CustomGiftConsultationSection = ({
   return (
     <section className="border-t border-shadow-black/10 bg-[#FAF7F2] py-14 md:py-20">
       <div className="mx-auto max-w-4xl px-4 text-center sm:px-6 md:px-8">
-        <p className="text-xs font-light uppercase tracking-[0.25em] text-maroon">
-          Bespoke Consultation
-        </p>
-        <h2 className="mt-2 text-2xl font-light tracking-wide text-shadow-black sm:text-3xl">
+        <p className="text-xs font-light tracking-wider text-maroon sm:text-sm">
           ร่วมสร้างสรรค์ของขวัญชิ้นพิเศษกับ Giftory TH
+        </p>
+        <h2 className="mt-1 text-2xl font-light tracking-wide text-shadow-black sm:text-3xl lg:text-4xl">
+          Bespoke Consultation Service
         </h2>
         <div className="mx-auto mt-3 h-[2px] w-12 bg-maroon" />
 
-        <p className="mx-auto mt-4 max-w-2xl text-sm font-light leading-relaxed text-shadow-black/75 sm:text-base">
+        <p className="mx-auto mt-4 max-w-2xl text-xs font-light leading-relaxed text-shadow-black/75 sm:text-sm md:text-base">
           บอกเล่าโอกาสพิเศษหรือความประทับใจที่คุณมองหา ทีมงานพร้อมให้คำปรึกษาและร่วมออกแบบของขวัญที่สะท้อนความใส่ใจของคุณได้อย่างสมบูรณ์แบบ
         </p>
 
