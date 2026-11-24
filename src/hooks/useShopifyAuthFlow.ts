@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { EMAIL_REGEX, type ShopifyCustomerProfile } from '@/lib/auth/shopifyCustomer';
+import { EMAIL_REGEX, type ShopifyCustomerProfile } from '@/lib/auth/types';
 import { useCustomerAuth } from '@/context/CustomerAuthContext';
 import toast from 'react-hot-toast';
 

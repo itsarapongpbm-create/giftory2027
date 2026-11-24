@@ -25,10 +25,10 @@ const EmailStep = ({
       {/* Title & Description */}
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-light tracking-tight text-shadow-black sm:text-3xl">
-          Sign in
+          เข้าสู่ระบบสมาชิก
         </h1>
         <p className="mt-2 text-xs font-light text-shadow-black/70 sm:text-sm">
-          Enter your email and we&apos;ll send you a verification code
+          กรอกอีเมลของคุณเพื่อรับรหัสยืนยันตัวตน (OTP 6 หลัก)
         </p>
       </div>
 
@@ -63,7 +63,7 @@ const EmailStep = ({
             htmlFor="customer-email"
             className="mb-1.5 block text-xs font-light text-shadow-black/80"
           >
-            Email
+            ที่อยู่อีเมล (Email)
           </label>
           <input
             id="customer-email"
@@ -123,32 +123,34 @@ const EmailStep = ({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <span>Sending code...</span>
+              <span>กำลังส่งรหัส OTP...</span>
             </span>
           ) : (
-            'Continue'
+            'ขอรับรหัสยืนยัน OTP'
           )}
         </button>
       </form>
 
       {/* Terms and Privacy policy footer */}
       <div className="mt-6 text-center text-[11px] font-light leading-relaxed text-shadow-black/60">
-        <p>
-          By continuing, you agree to our{' '}
+        <p className="mx-auto max-w-sm">
+          <span>เมื่อดำเนินการต่อ ถือว่าท่านยอมรับ</span>
+          <br className="hidden sm:inline" />
+          <span className="sm:hidden"> </span>
           <Link
             href="/about"
-            className="text-maroon underline underline-offset-2 hover:text-main"
+            className="inline-block whitespace-nowrap text-maroon underline underline-offset-2 transition-colors hover:text-main"
           >
-            Terms of service
-          </Link>{' '}
-          and acknowledge our{' '}
-          <Link
-            href="/about"
-            className="text-maroon underline underline-offset-2 hover:text-main"
-          >
-            Privacy policy
+            ข้อกำหนดการให้บริการ
           </Link>
-          .
+          <span className="mx-1">และ</span>
+          <Link
+            href="/about"
+            className="inline-block whitespace-nowrap text-maroon underline underline-offset-2 transition-colors hover:text-main"
+          >
+            นโยบายความเป็นส่วนตัว
+          </Link>
+          <span className="ml-1 inline-block whitespace-nowrap">ของ Giftory TH</span>
         </p>
       </div>
     </div>

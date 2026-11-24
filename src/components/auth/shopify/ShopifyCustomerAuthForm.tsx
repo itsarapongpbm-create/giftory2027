@@ -89,7 +89,7 @@ const ShopifyCustomerAuthForm = ({
                 d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
               />
             </svg>
-            <span className="hidden sm:inline">Back</span>
+            <span className="hidden sm:inline">ย้อนกลับ</span>
           </button>
         )}
 
@@ -129,7 +129,7 @@ const ShopifyCustomerAuthForm = ({
           href="/"
           className="hover:text-shadow-black hover:underline transition-colors"
         >
-          ← Return to store
+          ‹ กลับสู่หน้าร้านค้า Giftory
         </Link>
       </div>
     </div>

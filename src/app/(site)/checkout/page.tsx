@@ -311,6 +311,50 @@ export default function CheckoutPage() {
       pinnedCoords: pinnedLocation ? `${pinnedLocation.lat.toFixed(5)}, ${pinnedLocation.lng.toFixed(5)}` : undefined,
     });
 
+    // Send official receipt email via sales@giftoryth.com
+    const receiptEmail = senderEmail || user?.email;
+    if (receiptEmail) {
+      fetch('/api/orders/receipt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toEmail: receiptEmail,
+          orderId: mockOrderId,
+          items: items.map(i => ({ title: i.title, quantity: i.quantity, price: i.price })),
+          subtotal,
+          shippingFee,
+          discount: discountAmount,
+          total: grandTotal,
+          deliveryDate: deliveryMethod === 'pickup' ? 'รับที่ Giftory Studio' : selectedDate,
+          deliveryTimeSlot: deliveryMethod === 'pickup' ? 'เวลาทำการ (10:00 - 19:00)' : deliveryTimeLabel,
+          recipientName:
+            deliveryMethod === 'pickup'
+              ? `${senderFirstName} ${senderLastName}`.trim() || 'ลูกค้าผู้สั่งซื้อ'
+              : `${recipientFirstName} ${recipientLastName}`.trim(),
+          shippingAddress:
+            deliveryMethod === 'pickup'
+              ? 'Giftory Studio สุขุมวิท'
+              : `${addressLine1} ${addressLine2 ? addressLine2 + ' ' : ''}${district} ${province} ${postalCode}`,
+          paymentMethod:
+            paymentMethod === 'promptpay'
+              ? 'PromptPay QR Code'
+              : paymentMethod === 'credit_card'
+                ? 'บัตรเครดิต / บัตรเดบิต'
+                : 'โอนผ่านบัญชีธนาคาร',
+          cardMessage,
+          cardTo,
+          cardFrom,
+        }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            toast.success(`ส่งใบเสร็จรับเงินไปยัง ${receiptEmail} เรียบร้อยแล้ว`);
+          }
+        })
+        .catch(err => console.error('Failed to trigger order receipt email:', err));
+    }
+
     clearCart();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

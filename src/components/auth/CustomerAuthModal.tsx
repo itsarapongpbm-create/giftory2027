@@ -147,6 +147,16 @@ const CustomerAuthModal = () => {
               >
                 เข้าสู่ระบบ
               </button>
+
+              <div className="pt-2 text-center">
+                <a
+                  href="/login"
+                  onClick={closeAuthModal}
+                  className="text-xs font-light text-maroon underline underline-offset-2 hover:text-main"
+                >
+                  หรือเข้าสู่ระบบด้วยรหัสยืนยัน OTP ทางอีเมล ›
+                </a>
+              </div>
             </form>
           ) : (
             <form onSubmit={handleRegisterSubmit} className="space-y-3.5">

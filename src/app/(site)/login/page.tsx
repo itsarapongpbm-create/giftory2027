@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import ShopifyCustomerAuthForm from '@/components/auth/shopify/ShopifyCustomerAuthForm';
 
 export const metadata: Metadata = {
-  title: 'Sign in - Giftory Customer Accounts',
-  description: 'Sign in with your email to access your Giftory account and order history.',
+  title: 'เข้าสู่ระบบสมาชิก - Giftory TH',
+  description: 'เข้าสู่ระบบสมาชิก Giftory TH ด้วยอีเมลเพื่อติดตามสถานะคำสั่งซื้อและรับสิทธิประโยชน์พิเศษ',
   robots: {
     index: false,
     follow: false,

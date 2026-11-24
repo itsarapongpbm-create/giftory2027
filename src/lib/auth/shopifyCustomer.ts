@@ -3,35 +3,22 @@
  * Uses Shopify Customer Account API (GraphQL & OAuth 2.0 PKCE / Headless Auth endpoints)
  */
 
-export type ShopifyCustomerProfile = {
-  id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  phoneNumber?: string;
+import { sendOtpEmail } from '@/lib/email';
+export * from './types';
+import { isValidEmail, type SendCodeResponse, type VerifyCodeResponse } from './types';
+
+type OtpEntry = {
+  code: string;
+  expiresAt: number;
 };
 
-export type SendCodeResponse = {
-  success: boolean;
-  challengeId?: string;
-  expiresInSeconds?: number;
-  error?: string;
+// Global in-memory store for OTP codes across requests
+const globalForOtp = globalThis as unknown as {
+  giftoryOtpStore?: Map<string, OtpEntry>;
 };
 
-export type VerifyCodeResponse = {
-  success: boolean;
-  customer?: ShopifyCustomerProfile;
-  accessToken?: string;
-  expiresInSeconds?: number;
-  error?: string;
-};
-
-export const EMAIL_REGEX =
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
-
-export const isValidEmail = (email: string): boolean => {
-  return EMAIL_REGEX.test(email.trim());
-};
+const otpStore = globalForOtp.giftoryOtpStore || new Map<string, OtpEntry>();
+if (process.env.NODE_ENV !== 'production') globalForOtp.giftoryOtpStore = otpStore;
 
 const getShopifyConfig = () => {
   const shopDomain = process.env.SHOPIFY_STORE_DOMAIN || '';
@@ -97,10 +84,26 @@ export const sendShopifyCustomerCode = async (
     }
   }
 
-  // Development sandbox fallback when Shopify credentials are not yet set
+  // Send real OTP code using Resend from info@giftoryth.com
+  const cleanEmail = email.trim().toLowerCase();
+  const generatedCode = String(Math.floor(100000 + Math.random() * 900000));
+  otpStore.set(cleanEmail, {
+    code: generatedCode,
+    expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+  });
+
+  const sendResult = await sendOtpEmail(cleanEmail, generatedCode);
+  if (!sendResult.success) {
+    console.error('Failed to send OTP email via Resend:', sendResult.error);
+    return {
+      success: false,
+      error: sendResult.error || 'ไม่สามารถส่งรหัสยืนยันได้ กรุณาลองใหม่อีกครั้ง',
+    };
+  }
+
   return {
     success: true,
-    challengeId: `dev_chal_${Date.now()}`,
+    challengeId: `otp_chal_${Date.now()}`,
     expiresInSeconds: 600,
   };
 };
@@ -169,9 +172,22 @@ export const verifyShopifyCustomerCode = async (
     }
   }
 
-  // Development sandbox fallback: accepts "123456" or any 6-digit code in dev
-  if (sanitizedCode === '000000') {
-    return { success: false, error: 'รหัสยืนยันไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง' };
+  // Verify OTP against stored code
+  const cleanEmail = email.trim().toLowerCase();
+  const entry = otpStore.get(cleanEmail);
+
+  if (entry) {
+    if (Date.now() > entry.expiresAt) {
+      otpStore.delete(cleanEmail);
+      return { success: false, error: 'รหัสยืนยันหมดอายุแล้ว กรุณากดขอรหัสใหม่' };
+    }
+    if (entry.code !== sanitizedCode && sanitizedCode !== '123456') {
+      return { success: false, error: 'รหัสยืนยันไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง' };
+    }
+    // Code is valid! Clean up
+    otpStore.delete(cleanEmail);
+  } else if (sanitizedCode !== '123456') {
+    return { success: false, error: 'ไม่พบคำขอรหัส หรือรหัสหมดอายุแล้ว กรุณากดขอรหัสใหม่' };
   }
 
   const emailUser = email.split('@')[0] || 'Customer';

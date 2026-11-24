@@ -44,10 +44,10 @@ const OtpStep = ({
       {/* Title & Email recipient notice */}
       <div className="mb-6 text-center">
         <h1 className="text-2xl font-light tracking-tight text-shadow-black sm:text-3xl">
-          Enter code
+          กรอกรหัสยืนยัน OTP
         </h1>
         <div className="mt-2 text-xs font-light text-shadow-black/70 sm:text-sm">
-          <span>Sent to </span>
+          <span>รหัส 6 หลักถูกส่งไปยัง </span>
           <span className="font-normal text-shadow-black">{email}</span>
           <div className="mt-1">
             <button
@@ -56,7 +56,7 @@ const OtpStep = ({
               disabled={isLoading}
               className="text-xs text-maroon underline underline-offset-2 hover:text-main"
             >
-              Change email
+              เปลี่ยนอีเมล
             </button>
           </div>
         </div>
@@ -90,7 +90,7 @@ const OtpStep = ({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="mb-2 block text-center text-xs font-light text-shadow-black/70">
-            6-digit verification code
+            รหัสยืนยันตัวเลข 6 หลัก (ส่งจาก info@giftoryth.com)
           </label>
           <OtpDigitInput
             value={otpCode}
@@ -135,17 +135,17 @@ const OtpStep = ({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <span>Verifying code...</span>
+              <span>กำลังตรวจสอบรหัส...</span>
             </span>
           ) : (
-            'Sign in'
+            'ยืนยันและเข้าสู่ระบบ'
           )}
         </button>
       </form>
 
       {/* Resend Code Section */}
       <div className="mt-6 text-center text-xs font-light text-shadow-black/70">
-        <p>Didn&apos;t receive a code?</p>
+        <p>ยังไม่ได้รับรหัสยืนยัน?</p>
         <div className="mt-1">
           {canResend ? (
             <button
@@ -154,11 +154,11 @@ const OtpStep = ({
               disabled={isResending || isLoading}
               className="text-maroon underline underline-offset-2 hover:text-main"
             >
-              {isResending ? 'Sending new code...' : 'Resend code'}
+              {isResending ? 'กำลังส่งรหัสใหม่...' : 'ขอรหัสใหม่อีกครั้ง'}
             </button>
           ) : (
             <span className="text-shadow-black/40">
-              Resend code in {countdown}s
+              ขอรหัสใหม่ได้ในอีก {countdown} วินาที
             </span>
           )}
         </div>

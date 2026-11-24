@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
+import { useCustomerAuth } from '@/context/CustomerAuthContext';
 import { CloseIcon, TrashIcon } from '@/components/icons';
 import { formatPrice } from '@/utils/string';
 import { cn } from '@/utils/className';
@@ -13,12 +14,23 @@ const CartDrawer = () => {
   const router = useRouter();
   const { isCartOpen, closeCart, items, totalItems, subtotal, updateQuantity, removeItem } =
     useCart();
+  const { isLoggedIn } = useCustomerAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
-    if (!isCartOpen) return;
+    if (!isCartOpen) {
+      setShowLoginPrompt(false);
+      return;
+    }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeCart();
+      if (e.key === 'Escape') {
+        if (showLoginPrompt) {
+          setShowLoginPrompt(false);
+        } else {
+          closeCart();
+        }
+      }
     };
 
     const prevOverflow = document.body.style.overflow;
@@ -29,9 +41,13 @@ const CartDrawer = () => {
       document.body.style.overflow = prevOverflow;
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isCartOpen, closeCart]);
+  }, [isCartOpen, closeCart, showLoginPrompt]);
 
   const handleCheckout = () => {
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
     closeCart();
     router.push('/checkout');
   };
@@ -216,6 +232,95 @@ const CartDrawer = () => {
           </div>
         )}
       </div>
+
+      {/* Login Prompt Dialog when checkout is attempted without auth */}
+      {showLoginPrompt && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-shadow-black/60 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="login-prompt-title"
+        >
+          <div
+            className="relative w-full max-w-sm border border-shadow-black/10 bg-main-white p-6 shadow-2xl transition-all"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-shadow-black/10 pb-3">
+              <span className="text-[10px] font-medium uppercase tracking-widest text-maroon">
+                GIFTORY MEMBER
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowLoginPrompt(false)}
+                aria-label="Close dialog"
+                className="rounded-full p-1 text-shadow-black/50 transition-colors hover:bg-shadow-black/5 hover:text-shadow-black"
+              >
+                <CloseIcon className="size-4" />
+              </button>
+            </div>
+
+            <div className="py-5 text-center">
+              <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-maroon/5 text-maroon">
+                <svg
+                  className="size-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"
+                  />
+                </svg>
+              </div>
+              <h3 id="login-prompt-title" className="text-base font-light text-shadow-black">
+                ท่านยังไม่ได้เข้าสู่ระบบ
+              </h3>
+              <p className="mt-2 text-xs font-light leading-relaxed text-shadow-black/70">
+                เข้าสู่ระบบสมาชิกเพื่อสะสมประวัติคำสั่งซื้อ รับเอกสารใบเสร็จทางอีเมล และสิทธิประโยชน์พิเศษจาก Giftory
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLoginPrompt(false);
+                  closeCart();
+                  router.push('/login?return_to=/checkout');
+                }}
+                className="flex w-full items-center justify-center border border-maroon bg-maroon py-2.5 text-xs font-light tracking-wider text-white transition-all hover:bg-main hover:border-main"
+              >
+                เข้าสู่ระบบ
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowLoginPrompt(false)}
+                className="flex w-full items-center justify-center border border-shadow-black/20 bg-white py-2.5 text-xs font-light tracking-wider text-shadow-black/80 transition-colors hover:bg-shadow-black/5"
+              >
+                ปิดลง
+              </button>
+            </div>
+
+            <div className="mt-4 border-t border-shadow-black/10 pt-3 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLoginPrompt(false);
+                  closeCart();
+                  router.push('/checkout');
+                }}
+                className="text-[11px] font-light text-shadow-black/60 transition-colors hover:text-maroon underline underline-offset-2"
+              >
+                สั่งซื้อโดยไม่เข้าสู่ระบบ (Guest Checkout)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
